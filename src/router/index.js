@@ -16,6 +16,7 @@ import SectionQuery from "@/views/section/SectionQuery";
 import EmployeeInsert from "@/views/employee/EmployeeInsert";
 import EmployeeQuery from "@/views/employee/EmployeeQuery";
 import UpdatePassword from "@/views/home/UpdatePassword";
+import Welcome from "@/views/home/Welcome";
 Vue.use(VueRouter);
 
 const routes = [{
@@ -43,13 +44,20 @@ const routes = [{
       path: '/Home',
       name: 'Home',
       component: Home,
+      redirect: {
+        name: "Welcome"
+      },
       children: [{
-        path: '/Home/userQuery',
+          path: '/Home/Welcome',
+          name: 'Welcome',
+          component:Welcome,
+        },{
+        path: '/Home/UserQuery',
         name: 'UserQuery',
         component:UserQuery,
       },
         {
-        path: '/Home/userInsert',
+        path: '/Home/UserInsert',
         name: 'UserInsert',
         component:UserInsert,
       },
