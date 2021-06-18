@@ -72,7 +72,7 @@
         name: "userQuery",
         data(){
             return{
-                userData:[{loginName:"1212556",userName:"李二",status:"管理员"}],
+                userData:[],
                 studentName:"",
                 isManage:true,
                 dialogFormVisible:false,
@@ -121,8 +121,21 @@
                 this.user.id = row;
                 this.isUpdate = true;
                 this.isDisabled = false;
+            },
+            getUserList(){
+                this.$axios.get("/user/listUserInfo").then((resp)=> {
+                    this.userData = resp.data;
+                }).catch(error =>{
+                    this.$message({
+                        type: 'error',
+                        message: "查询失败，原因是"+error.toString()
+                    });
+                });
             }
-        }
+        },
+        mounted() {
+            this.getUserList();
+        },
     }
 </script>
 
