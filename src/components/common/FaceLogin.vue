@@ -65,13 +65,11 @@ export default {
       console.log(size)
 
       // 上传拍照信息  调用接口上传图片 .........
-
-      // 保存到本地
-      // this.dialogCamera = false
-      // let ADOM = document.createElement('a')
-      // ADOM.href = URL.createObjectURL(str)
-      // ADOM.download = new Date().getTime() + '.jpeg'
-      // ADOM.click()
+      this.$axios.get("/login/faceLogin", {
+        params:{
+          base:str
+        }
+      })
     },
     // 关闭摄像头
     closeCamera () {
