@@ -3,13 +3,13 @@
     <div>
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>职位管理</el-breadcrumb-item>
-        <el-breadcrumb-item>查询职位</el-breadcrumb-item>
+        <el-breadcrumb-item>职位查询</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div style="width:500px;margin:25px 0;">
       <el-input v-model="studentName" placeholder="请输入职位" style="width:300px" clearable></el-input>
-      <el-button type="primary" style="margin-left: 10px;" @click="selectUser">搜索</el-button>
-      <el-button type="primary" style="margin-left: 10px;" @click="selectUser">删除选中</el-button>
+      <el-button type="primary" style="margin-left: 10px;" @click="searchPosition">搜索</el-button>
+      <el-button type="primary" style="margin-left: 10px;" @click="deletePosition">删除选中</el-button>
     </div>
     <el-table
         ref="multipleTable"
@@ -37,7 +37,7 @@
       <el-table-column
           label="操作"
           show-overflow-tooltip>
-        <span>修改</span>
+        <span class="modify" style="cursor: pointer;color: red" @click="modifyPosition">修改</span>
       </el-table-column>
     </el-table>
 
@@ -55,17 +55,11 @@
 
     <el-dialog :title="dialogTitle[dialogStatu]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
-        <el-form-item label="登录名">
+        <el-form-item label="职位名称">
           <el-input v-model="userData.loginName"></el-input>
         </el-form-item>
-        <el-form-item label="用户名">
+        <el-form-item label="详细信息">
           <el-input v-model="userData.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="权限">
-          <el-select v-model="userData.status" clearable placeholder="请选择" style="width: 100%">
-            <el-option label="管理员" value="2"></el-option>
-            <el-option label="普通用户" value="1"></el-option>
-          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -138,6 +132,9 @@ export default {
     }
   },
   methods: {
+    modifyPosition(){
+      this.dialogFormVisible=true;
+    },
     rowClass() { //表格数据居中显示
       return "text-align:center"
     },
@@ -161,8 +158,8 @@ export default {
       this.dialogStatu = "checkInfo";
       this.user.id = row;
     },
-    deleteUser(row) {
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+    deletePosition(row) {
+      this.$confirm('此操作将永久删除该职位, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
