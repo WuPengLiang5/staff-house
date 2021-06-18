@@ -5,7 +5,7 @@
             <div style="float: left;color: #336dff;margin-top: 15px">公告名称：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告名称"></el-input>
             <div style="float: left;color: #336dff;padding-left: 5px;margin-top: 14px">公告内容 ：</div>
-            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告内容"></el-input>
+            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input2" placeholder="请输入公告内容"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">清空</el-button>
         </div>
@@ -53,7 +53,6 @@
                 width="150"
                 align="center"
         >
-
         </el-table-column>
         <el-table-column
                     fixed="right"
@@ -61,10 +60,8 @@
                     width="150"
                     align="center"
         >
-        <template >
                 <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
                 <el-button type="text" size="small" @click="edit">编辑</el-button>
-            </template>
         </el-table-column>
         <el-table-column
                 fixed="right"
@@ -72,7 +69,6 @@
                 width="100"
                 align="center"
         >
-
                 <a class="el-icon-view"  @click="showpopup()" style="cursor: pointer"></a>
         </el-table-column>
     </el-table>
@@ -94,16 +90,18 @@
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="公告名称" style="margin-right: 180px">
-                    <el-input value="sdasda"></el-input>
+                    <el-input
+                    v-model="addTitle"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="公告内容" style="margin-right: 180px">
                     <el-input
-                            value="dsjqowidqohi都市圈我喜欢滴1"
+
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
                             show-word-limit="true"
+                            v-model="textarea"
                     >
                     </el-input>
                 </el-form-item>
@@ -125,7 +123,10 @@
         name: "NoticeQuery",
         data() {
             return {
-                textarea: '',
+                input:'',
+                input2:'',
+                addTitle:'居然展示课',
+                textarea: '今天上午，以及京津冀，死哦的hi奥vhiadiwydi',
                 labelPosition: 'right',
                 formLabelAlign: {
                     name: '',
@@ -178,7 +179,9 @@
                 console.log(row);
             },
             edit(){
-                this.editView=1
+                this.addTitle='居然展示课';
+                this.textarea='今天上午，以及京津冀，死哦的hi奥vhiadiwydi';
+                this.editView=1;
                 this.overView2=1;
             },
             open() {
