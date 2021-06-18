@@ -85,10 +85,10 @@
                             <span>下载中心</span>
                         </template>
                         <el-menu-item v-show="isShow" index="uploadFile" @click="$router.push({ name: 'UploadFile' })">
-                            <span slot="title" >上传文档</span>
+                            <span slot="title" >文档查询</span>
                         </el-menu-item>
                         <el-menu-item index="fileQuery" @click="$router.push({ name: 'FileQuery' })">
-                            <span slot="title">文档查询</span>
+                            <span slot="title">上传文档</span>
                         </el-menu-item>
                     </el-submenu>
 
