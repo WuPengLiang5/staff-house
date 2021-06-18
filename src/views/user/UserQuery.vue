@@ -17,22 +17,26 @@
             <el-table-column
                     prop="loginName"
                     label="登录名"
-                    weight="3">
+                    weight="3"
+                    align="center">
             </el-table-column>
             <el-table-column
                     prop="userName"
                     label="用户名"
-                    weight="3">
+                    weight="3"
+                    align="center">
             </el-table-column>
             <el-table-column
                     prop="status"
                     label="权限"
-                    weight="3">
+                    weight="3"
+                    align="center">
             </el-table-column>
             <el-table-column
                     prop="status"
                     label="操作"
-                    width="150">
+                    width="150"
+                    align="center">
                 <template slot-scope="scope">
                     <el-button @click="checkInfo(scope.row)" type="text" size="small" weight="3">查看</el-button>
                     <el-button @click="updateUserInfo(scope.row)" type="text" size="small" weight="3"  v-show="isManage">编辑</el-button>
@@ -40,7 +44,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog :title="dialogTitle[dialogStatu]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+        <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
             <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
                 <el-form-item label="登录名">
                     <el-input v-model="userData.loginName"></el-input>
@@ -80,7 +84,7 @@
                 isUpdate:false,
                 //是否禁用表单
                 isDisabled:true,
-                dialogStatu:"",
+                dialogStatus:"",
                 options: [{
                     value: 'all',
                     label: '全部'
