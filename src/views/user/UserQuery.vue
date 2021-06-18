@@ -13,7 +13,7 @@
             </el-select>
             <el-button type="primary" style="margin-left: 10px;" @click="selectUser">搜索</el-button>
         </div>
-        <el-table max-height="600" :data="searchResult">
+        <el-table max-height="600" :data="userData">
             <el-table-column
                     prop="loginName"
                     label="登录名"
@@ -69,9 +69,7 @@
         data(){
             return{
                 userData:[{loginName:"1212556",userName:"李二",status:"管理员"}],
-                searchResult:[],
                 studentName:"",
-                multipleSelection:[],
                 isManage:true,
                 dialogFormVisible:false,
                 user:{},
@@ -98,7 +96,7 @@
         },
         methods:{
             selectUser(){
-                this.searchResult = this.userData;
+               this.userData=[{loginName:"888888888",userName:"李二",status:"普通用户"}];
             },
             checkInfo(row){
                 this.dialogFormVisible = true;
