@@ -8,8 +8,8 @@
         </div>
         <div style="clear: both"></div>
         <div class="divDottedTop">
-            <button class="button1">搜索</button>
-            <button class="button2">删除</button>
+            <button class="button1">添加</button>
+            <button class="button2">取消</button>
         </div>
     </div>
 </template>

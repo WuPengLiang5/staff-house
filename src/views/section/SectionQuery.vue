@@ -68,7 +68,7 @@
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="部门名称" style="margin-right: 180px">
-                    <el-input value="技术部"></el-input>
+                    <el-input value="技术部" v-model="name"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="详细信息" style="margin-right: 180px">
@@ -78,6 +78,7 @@
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
                             show-word-limit="true"
+                            v-model="detail"
                     >
                     </el-input>
                 </el-form-item>
@@ -99,6 +100,9 @@
         name: "NoticeQuery",
         data() {
             return {
+                name:'',
+                detail:'',
+                input:'',
                 textarea: '',
                 labelPosition: 'right',
                 formLabelAlign: {
@@ -148,6 +152,8 @@
                 console.log(row);
             },
             edit(){
+                this.name='jjjjjjjj'
+                this.detail='bbbbbbbbbbb'
                 this.editView=1
                 this.overView2=1;
             },
