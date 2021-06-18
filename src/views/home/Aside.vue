@@ -137,7 +137,7 @@
     }
 
     .header-logo {
-        background-color: #17b3a3;
+        background-color: #2adcff;
         text-align: center;
         height: 50px;
         line-height: 50px;
@@ -159,5 +159,8 @@
     }
     .icon-size-true i {
         font-size: 18px !important;
+    }
+    .el-select-dropdown .el-scrollbar .el-scrollbar__wrap {
+        overflow: scroll!important;
     }
 </style>
