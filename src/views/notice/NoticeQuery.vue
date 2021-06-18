@@ -90,6 +90,7 @@
             </div>
         </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
+        <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="公告名称" style="margin-right: 180px">
@@ -132,6 +133,7 @@
                     type: ''
                 },
                 overView:0,
+                overView2:0,
                 editView:0,
                 popup: 0,
                 tableData: [{
@@ -151,7 +153,7 @@
         methods: {
 
             close(){
-                this.overView = 0;
+                this.overView2 = 0;
                 this.editView = 0;
             },
             success(){
@@ -159,7 +161,7 @@
                     message: '添加成功',
                     type: 'success'
             });
-                this.overView = 0;
+                this.overView2 = 0;
                 this.editView = 0;
             },
             //打开活动规则页面
@@ -177,7 +179,7 @@
             },
             edit(){
                 this.editView=1
-                this.overView=1;
+                this.overView2=1;
             },
             open() {
                 this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
