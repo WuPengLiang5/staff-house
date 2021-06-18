@@ -7,7 +7,7 @@
             <div style="float: left;color: #336dff;padding-left: 5px;margin-top: 14px">公告内容 ：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告内容"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary">搜索</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">清空</el-button>
         </div>
     <el-table
             :data="tableData"
