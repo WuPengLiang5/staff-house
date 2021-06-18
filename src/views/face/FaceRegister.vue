@@ -85,7 +85,7 @@ export default {
       })
       this.$refs['video'].srcObject = null
 
-      this.$router.push({name:"Home"})
+      this.$router.push({name: 'Home'});
     },
   }
 }
