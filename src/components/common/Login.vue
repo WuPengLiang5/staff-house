@@ -3,7 +3,7 @@
         <div class="login-content">
             <div class="login-main">
                 <h2 class="login-main-title">
-                    <span style="color: cornflowerblue">CSI员工</span>
+                    <span style="color: #6495ed">CSI员工</span>
                     <span style="color: #ee8145">之家</span></h2>
                 <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" status-icon>
                     <el-form-item prop="userName">

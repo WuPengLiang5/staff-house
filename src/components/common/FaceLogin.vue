@@ -13,10 +13,11 @@
           <!--返回-->
           <el-button size="mini" type="primary" @click="closeCamera">返回</el-button>
 
+
           <!--图片展示-->
           <video ref="video" width="640" height="480" autoplay></video>
           <!--canvas截取流-->
-<!--          <canvas ref="canvas" width="320" height="240"></canvas>-->
+          <canvas ref="canvas" style="z-index: -1" width="320" height="240"></canvas>
 
         </div>
       </div>
