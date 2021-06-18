@@ -2,7 +2,7 @@
     <div>
         <span>用户查询</span>
         <div style="margin-top:50px;">
-            <el-input v-model="studentName" placeholder="请输入用户名" style="width:60%" clearable></el-input>
+            <el-input v-model="userName" placeholder="请输入用户名" style="width:60%" clearable></el-input>
             <el-select v-model="rangeValue" clearable placeholder="请选择">
                 <el-option
                         v-for="item in options"
@@ -73,7 +73,7 @@
         data(){
             return{
                 userData:[],
-                studentName:"",
+                userName:"",
                 isManage:true,
                 dialogFormVisible:false,
                 user:{},
@@ -104,20 +104,31 @@
             },
             checkInfo(row){
                 this.dialogFormVisible = true;
-                this.dialogStatu = "checkInfo";
-                this.user.id = row;
+                this.dialogStatus = "checkInfo";
+                this.user.id = row.id;
             },
             deleteUser(row){
                 this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
+                }).then(() => {
+                    this.$axios.post("/user/deleteUserById?id="+row.id).then((resp)=> {
+                        if (resp) {
+                            this.getUserList();
+                            this.$message.success("删除成功！");
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
                 });
-                this.user.id = row;
             },
             updateUserInfo(row){
                 this.dialogFormVisible = true;
-                this.dialogStatu = "updateInfo";
+                this.dialogStatus = "updateInfo";
                 this.user.id = row;
                 this.isUpdate = true;
                 this.isDisabled = false;
@@ -128,8 +139,9 @@
                 }).catch(error =>{
                     this.$message({
                         type: 'error',
-                        message: "查询失败，原因是"+error.toString()
+                        message: "查询失败，原因是"+error.toString(),
                     });
+                    this.$router.push({name: '404'});
                 });
             }
         },
