@@ -1,13 +1,183 @@
 <template>
+  <div>
     <div>
-        职位查询
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item>职位管理</el-breadcrumb-item>
+        <el-breadcrumb-item>查询职位</el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
+    <div style="width:500px;margin:25px 0;">
+      <el-input v-model="studentName" placeholder="请输入职位" style="width:300px" clearable></el-input>
+      <el-button type="primary" style="margin-left: 10px;" @click="selectUser">搜索</el-button>
+      <el-button type="primary" style="margin-left: 10px;" @click="selectUser">删除选中</el-button>
+    </div>
+    <el-table
+        ref="multipleTable"
+        :data="tableData"
+        tooltip-effect="dark"
+        border="true"
+        style="width: 100%"
+        :cell-style="rowClass"
+        :header-cell-style="rowClass"
+        @selection-change="handleSelectionChange">
+      <el-table-column
+          type="selection"
+          width="100">
+      </el-table-column>
+      <el-table-column
+          prop="date"
+          label="职位名称"
+          width="500">
+      </el-table-column>
+      <el-table-column
+          prop="name"
+          label="详细信息"
+          width="500">
+      </el-table-column>
+      <el-table-column
+          label="操作"
+          show-overflow-tooltip>
+        <span>修改</span>
+      </el-table-column>
+    </el-table>
+
+    <div class="block" style="margin-top: 20px">
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage4"
+          :page-sizes="5"
+          :page-size="100"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="400">
+      </el-pagination>
+    </div>
+
+    <el-dialog :title="dialogTitle[dialogStatu]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
+        <el-form-item label="登录名">
+          <el-input v-model="userData.loginName"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名">
+          <el-input v-model="userData.userName"></el-input>
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-select v-model="userData.status" clearable placeholder="请选择" style="width: 100%">
+            <el-option label="管理员" value="2"></el-option>
+            <el-option label="普通用户" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" v-show="isUpdate">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "PositionQuery"
+export default {
+  name: "positionQuery",
+  data() {
+    return {
+      tableData: [{
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-08',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-06',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-07',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }],
+      multipleSelection: [],
+      userData: [{loginName: "1212556", userName: "李二", status: "管理员"}],
+      studentName: "",
+      isManage: true,
+      dialogFormVisible: false,
+      user: {},
+      dialogTitle: {
+        checkInfo: "查看信息",
+        updateInfo: "编辑信息"
+      },
+      isUpdate: false,
+      //是否禁用表单
+      isDisabled: true,
+      dialogStatu: "",
+      options: [{
+        value: 'all',
+        label: '全部'
+      }, {
+        value: '1',
+        label: '普通用户'
+      }, {
+        value: '2',
+        label: '管理员'
+      }],
+      rangeValue: "",
     }
+  },
+  methods: {
+    rowClass() { //表格数据居中显示
+      return "text-align:center"
+    },
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    selectUser() {
+      this.userData = [{loginName: "888888888", userName: "李二", status: "普通用户"}];
+    },
+    checkInfo(row) {
+      this.dialogFormVisible = true;
+      this.dialogStatu = "checkInfo";
+      this.user.id = row;
+    },
+    deleteUser(row) {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      });
+      this.user.id = row;
+    },
+    updateUserInfo(row) {
+      this.dialogFormVisible = true;
+      this.dialogStatu = "updateInfo";
+      this.user.id = row;
+      this.isUpdate = true;
+      this.isDisabled = false;
+    }
+  }
+}
 </script>
 
 <style scoped>
