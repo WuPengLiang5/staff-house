@@ -6,14 +6,14 @@
                     <span style="color: #6495ed">CSI员工</span>
                     <span style="color: #ee8145">之家</span></h2>
                 <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" status-icon>
-                    <el-form-item prop="userName">
-                        <el-input v-model="dataForm.userName" placeholder="帐号"></el-input>
+                    <el-form-item prop="loginName">
+                        <el-input v-model="dataForm.loginName" placeholder="帐号"></el-input>
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
+                        <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit('dataForm')">登录</el-button>
                         <el-button class="login-btn-submit" type="primary" @click="faceSubmit()">刷脸</el-button>
                     </el-form-item>
                 </el-form>
@@ -27,11 +27,11 @@
         data() {
             return {
                 dataForm: {
-                    userName: '',
+                    loginName: '',
                     password: ''
                 },
                 dataRule: {
-                    userName: [{
+                  loginName: [{
                         required: true,
                         message: '帐号不能为空',
                         trigger: 'blur'
@@ -51,9 +51,36 @@
             },
 
             // 提交表单
-            dataFormSubmit() {
+            dataFormSubmit(dataForm) {
                 // TODO：登录代码逻辑待完善
-                this.$router.push({name: 'Home'});
+              this.$refs[dataForm].validate((valid) => {
+                if (valid) {
+                  this.$axios({
+                    header:{
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    method:'post',
+                    url:"/login/doLogin",
+                    data:{
+                      "loginName":this.dataForm.loginName,
+                      "password":this.dataForm.password
+                    },
+                  }).then((resp) => {
+                    this.$router.push({name: 'Home'});
+                  }).catch(error => {
+                    this.$message({
+                      type: 'error',
+                      message: "登录失败，原因是" + error.toString()
+                    });
+                  });
+                }else{
+                  this.$message({
+                    message: '请输入所有字段',
+                    type: 'error'
+                  });
+                  return false
+                }
+              });
             }
         }
     }
