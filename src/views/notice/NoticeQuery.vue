@@ -12,13 +12,13 @@
     <el-table
             :data="tableData"
             border
-            style="width: 90%"
+            style="width: 100%"
             margin="auto"
     >
 
     <el-table-column
                 fixed
-                width="80"
+                width="60"
                 align="center"
     >
             <input V-if="" type="checkbox">
