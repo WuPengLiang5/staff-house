@@ -9,7 +9,7 @@
         <div class="header-menu">
             <el-menu mode="horizontal" class="header-menu-submenu">
                 <!-- 设置 -->
-                <el-menu-item title="设置" index="1">
+                <el-menu-item title="设置" index="1"  @click="faceRegister">
                     <i class="el-icon-info"></i>人脸注册
                 </el-menu-item>
                 <!-- 帮助文档 -->
@@ -68,6 +68,10 @@
                 this.foldAside = !this.foldAside;
                 // this.$emit 用于触发父组件的方法，并传递参数值
                 this.$emit("foldOrOpenAside", this.foldAside)
+            },
+
+            faceRegister() {
+                this.$router.push({name:"FaceRegister"})
             },
             // 退出登录，回到登录界面
             logout() {

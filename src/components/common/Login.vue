@@ -14,7 +14,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
-                        <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">刷脸</el-button>
+                        <el-button class="login-btn-submit" type="primary" @click="faceSubmit()">刷脸</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -45,6 +45,11 @@
             }
         },
         methods: {
+            // 跳转刷脸页面
+            faceSubmit() {
+                this.$router.push({name: 'FaceLogin'});
+            },
+
             // 提交表单
             dataFormSubmit() {
                 // TODO：登录代码逻辑待完善

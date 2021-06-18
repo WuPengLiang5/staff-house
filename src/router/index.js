@@ -17,6 +17,8 @@ import EmployeeInsert from "@/views/employee/EmployeeInsert";
 import EmployeeQuery from "@/views/employee/EmployeeQuery";
 import UpdatePassword from "@/views/home/UpdatePassword";
 import Welcome from "@/views/home/Welcome";
+import FaceLogin from "@/components/common/FaceLogin";
+import FaceRegister from "@/views/face/FaceRegister";
 Vue.use(VueRouter);
 
 const routes = [{
@@ -34,6 +36,16 @@ const routes = [{
       path: '/Login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/FaceLogin',
+      name: 'FaceLogin',
+      component: FaceLogin
+    },
+    {
+      path: '/FaceRegister',
+      name: 'FaceRegister',
+      component: FaceRegister
     },
     {
       path: '/UpdatePassword',
