@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div style="height: 25px;">
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item :to="{}">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>下载中心</el-breadcrumb-item>
+        <el-breadcrumb-item>查询文档</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <div style="border: #EBEEF5 1px solid;padding-left: 12px;padding-top: 1px;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)">
       <p style="text-align: left;margin: 10px">数据筛选</p>
       <el-form :inline="true" :model="formInline" class="demo-form-inline">

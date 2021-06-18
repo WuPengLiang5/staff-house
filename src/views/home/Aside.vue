@@ -137,7 +137,7 @@
     }
 
     .header-logo {
-        background-color: #2adcff;
+        background-color: #6495ed;
         text-align: center;
         height: 50px;
         line-height: 50px;

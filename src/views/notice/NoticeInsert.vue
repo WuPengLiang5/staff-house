@@ -1,10 +1,6 @@
 <template>
 
     <div>
-        <el-breadcrumb separator-class="el-icon-arrow-right" id="head">
-            <el-breadcrumb-item>当前位置：公告管理</el-breadcrumb-item>
-            <el-breadcrumb-item>公告查询</el-breadcrumb-item>
-        </el-breadcrumb>
         <div>
         <el-form  label-width="220px" style="margin-top: 50px;">
             <el-form-item label="公告名称" style="margin-right: 120px" >

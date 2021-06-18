@@ -1,27 +1,24 @@
 <template>
     <div>
-        <el-breadcrumb separator-class="el-icon-arrow-right" style="height: 30px;background-color: #82ecff;padding-top: 10px;">
-            <el-breadcrumb-item>当前位置：公告管理</el-breadcrumb-item>
-            <el-breadcrumb-item>公告查询</el-breadcrumb-item>
-        </el-breadcrumb>
-        <div style="background-image: linear-gradient(to bottom,white,grey);height: 55px">
+
+        <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">公告名称：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告名称"></el-input>
             <div style="float: left;color: #336dff;padding-left: 5px;margin-top: 14px">公告内容 ：</div>
-            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告内容"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px">搜索</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px">删除</el-button>
+            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input2" placeholder="请输入公告内容"></el-input>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary">搜索</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">清空</el-button>
         </div>
     <el-table
             :data="tableData"
             border
-            style="width: 90%"
+            style="width: 100%"
             margin="auto"
     >
 
     <el-table-column
                 fixed
-                width="80"
+                width="60"
                 align="center"
     >
             <input V-if="" type="checkbox">
@@ -56,7 +53,6 @@
                 width="150"
                 align="center"
         >
-
         </el-table-column>
         <el-table-column
                     fixed="right"
@@ -64,10 +60,8 @@
                     width="150"
                     align="center"
         >
-        <template >
                 <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
                 <el-button type="text" size="small" @click="edit">编辑</el-button>
-            </template>
         </el-table-column>
         <el-table-column
                 fixed="right"
@@ -75,7 +69,6 @@
                 width="100"
                 align="center"
         >
-
                 <a class="el-icon-view"  @click="showpopup()" style="cursor: pointer"></a>
         </el-table-column>
     </el-table>
@@ -93,19 +86,22 @@
             </div>
         </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
+        <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="公告名称" style="margin-right: 180px">
-                    <el-input value="sdasda"></el-input>
+                    <el-input
+                    v-model="addTitle"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="公告内容" style="margin-right: 180px">
                     <el-input
-                            value="dsjqowidqohi都市圈我喜欢滴1"
+
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
                             show-word-limit="true"
+                            v-model="textarea"
                     >
                     </el-input>
                 </el-form-item>
@@ -127,7 +123,10 @@
         name: "NoticeQuery",
         data() {
             return {
-                textarea: '',
+                input:'',
+                input2:'',
+                addTitle:'居然展示课',
+                textarea: '今天上午，以及京津冀，死哦的hi奥vhiadiwydi',
                 labelPosition: 'right',
                 formLabelAlign: {
                     name: '',
@@ -135,6 +134,7 @@
                     type: ''
                 },
                 overView:0,
+                overView2:0,
                 editView:0,
                 popup: 0,
                 tableData: [{
@@ -154,7 +154,7 @@
         methods: {
 
             close(){
-                this.overView = 0;
+                this.overView2 = 0;
                 this.editView = 0;
             },
             success(){
@@ -162,7 +162,7 @@
                     message: '添加成功',
                     type: 'success'
             });
-                this.overView = 0;
+                this.overView2 = 0;
                 this.editView = 0;
             },
             //打开活动规则页面
@@ -179,8 +179,10 @@
                 console.log(row);
             },
             edit(){
-                this.editView=1
-                this.overView=1;
+                this.addTitle='居然展示课';
+                this.textarea='今天上午，以及京津冀，死哦的hi奥vhiadiwydi';
+                this.editView=1;
+                this.overView2=1;
             },
             open() {
                 this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
