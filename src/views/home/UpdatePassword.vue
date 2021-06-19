@@ -2,7 +2,7 @@
     <el-dialog title="修改密码" :visible.sync="visible" :append-to-body="true">
         <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
             <el-form-item label="账号">
-                <span>{{ userName }}</span>
+                <span>{{ loginName }}</span>
             </el-form-item>
             <el-form-item label="原密码" prop="password">
                 <el-input type="password" v-model="dataForm.password" placeholder="原密码"></el-input>
@@ -16,7 +16,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="visible = false">取消</el-button>
-            <el-button type="primary" @click="dataFormSubmit()">确定</el-button>
+            <el-button type="primary" @click="dataFormSubmit('dataForm')">确定</el-button>
         </span>
     </el-dialog>
 </template>
@@ -25,7 +25,7 @@
     export default {
         data() {
             return {
-                userName: 'admin',
+                loginName: '123',
                 visible: false,
                 dataForm: {
                     password: '',
@@ -61,15 +61,53 @@
                 })
             },
             // 表单提交，回到登录界面
-            dataFormSubmit() {
+            dataFormSubmit(dataForm) {
                 // TODO: 表达提交逻辑待完成
-                alert("表达提交逻辑未完成")
-                this.visible = false;
-                this.$nextTick(() => {
-                    this.$router.push({
-                        name: "Login"
+              this.$refs[dataForm].validate((valid) => {
+                if (valid) {
+                  if (this.dataForm.newPassword === this.dataForm.confirmPassword){
+                    const config = {
+                      header:{
+                        "Content-Type":"multipart/form-data"
+                      },
+                      method: 'post',
+                      url: '/login/updateUserPassword',
+                      data:{
+                        "loginName":this.loginName,
+                        "password":this.dataForm.password,
+                        "newPassword":this.dataForm.confirmPassword
+                      }
+                    };
+                    this.$axios(config).then((resp)=>{
+                      console.log(resp.data)
+                      if (resp.data===true){
+                        this.$message({
+                          type: 'success',
+                          message: "成功修改密码"
+                        });
+                        this.visible = false;
+                      }else{
+                        this.$message({
+                          type: 'error',
+                          message: "原密码输入错误"
+                        });
+                      }
                     })
-                })
+                  }else{
+                    this.$message({
+                      type: 'error',
+                      message: "两次密码输入不一样，请重新输入"
+                    });
+                  }
+                }
+              });
+
+
+                // this.$nextTick(() => {
+                //     this.$router.push({
+                //         name: "Login"
+                //     })
+                // })
             }
         }
     }
