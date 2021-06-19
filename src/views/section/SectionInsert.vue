@@ -1,51 +1,67 @@
 <template>
-    <div class="modifydepartment">
-        <div class="departmentInfo">
-            <font color="#1e90ff">部门名称：</font>
-            <input type="text"/>
-            <font color="#1e90ff" style="margin-left: 10px">详细描述：</font>
-            <input type="text"/>
-        </div>
-        <div style="clear: both"></div>
-        <div class="divDottedTop">
-            <button class="button1">添加</button>
-            <button class="button2">取消</button>
+
+    <div>
+        <div>
+            <el-form  label-width="220px" style="margin-top: 50px;">
+                <el-form-item label="部门名称" style="margin-right: 120px" >
+                    <el-input v-model="title"></el-input>
+                </el-form-item>
+                <el-divider></el-divider>
+                <el-form-item label="详细信息" style="margin-right: 120px" >
+                    <el-input
+                            v-model="text"
+                            type="textarea"
+                            :autosize="{ minRows: 10, maxRows: 10}"
+                            placeholder="请输入内容"
+                            show-word-limit="true"
+                    >
+                    </el-input>
+                </el-form-item>
+                <el-divider></el-divider>
+                <el-form-item style="margin-right: 120px">
+                    <el-button type="primary" @click="add">添加</el-button>
+                    <el-button type="primary" @click="rebuild">重置</el-button>
+                </el-form-item>
+            </el-form>
         </div>
     </div>
 </template>
 
 <script>
-
-
+    export default {
+        name: "NoticeInsert",
+        data(){
+            return{
+                title:"",
+                text:""
+            }
+        },
+        methods:{
+            rebuild(){
+                this.title="";
+                this.text="";
+            },
+            add(){
+                this.$message({
+                    message: '添加成功',
+                    type: 'success'
+                });
+                this.title="";
+                this.text="";
+            }
+        }
+    }
 </script>
 
-<style>
-    .modifydepartment{
-        border: 1px solid rgba(59, 111, 135, 0.61);
-        width: 100%;
-        height: 25%;
-        background-color: #f1f4f5;
-    }
-    .button1{
-        float: left;
-        margin-left: 20px;
-    }
-    .button2{
-        float: left;
-        margin-left: 20px;
-    }
-    .divDottedTop{
-        height:50px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        border-top:1px dashed rgba(59, 111, 135, 0.61);
-    }
-    .departmentInfo{
-        float: left;
-        height: 150px;
-        display: flex;
-        align-items: center;
-        margin-left: 20px;
+<style scoped>
+    #head{
+        padding-left: 10px;
+        margin-left:-20px;
+        height: 40px;
+        background-color: #82ecff;
+        padding-top: 25px;
+        width: 1400px;
+        margin-top: -25px;
+
     }
 </style>
