@@ -152,7 +152,9 @@
                     }
                 }else {
                     this.$axios.post("user/getUserInfoByUserName?userName="+this.userName).then((resp)=>{
-                        this.userData=[resp.data];
+                        if(resp.data!==null){
+                            this.userData=resp.data;
+                        }
                     })
                 }
             },
