@@ -76,10 +76,10 @@
             // 退出登录，回到登录界面
             logout() {
                 // TODO：退出逻辑待完成
-                alert("退出逻辑未完成");
-                this.$router.push({
-                    name: "Login"
-                })
+              sessionStorage.setItem("userInfo", JSON.stringify(''))
+              this.$router.push({
+                name: "Login"
+              })
             }
         }
     }

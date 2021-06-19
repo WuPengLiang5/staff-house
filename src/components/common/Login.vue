@@ -66,7 +66,17 @@
                       "password":this.dataForm.password
                     },
                   }).then((resp) => {
-                    this.$router.push({name: 'Home'});
+                    console.log(resp.data)
+                    if (resp.data.loginName!=="notfound"){
+                      const userInfo = resp.data
+                      sessionStorage.setItem("userInfo", JSON.stringify(userInfo))
+                      this.$router.push({name: 'Home'});
+                    }else{
+                      this.$message({
+                        type: 'error',
+                        message: "登录失败：密码错误"
+                      });
+                    }
                   }).catch(error => {
                     this.$message({
                       type: 'error',
