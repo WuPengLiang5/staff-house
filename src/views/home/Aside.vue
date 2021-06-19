@@ -27,7 +27,7 @@
                         <el-menu-item index="userQuery" @click="$router.push({ name: 'UserQuery' })">
                             <span slot="title">用户查询</span>
                         </el-menu-item>
-                        <el-menu-item  v-show="isShow" index="userInsert" @click="$router.push({ name: 'UserInsert' })">
+                        <el-menu-item  v-show="isManage" index="userInsert" @click="$router.push({ name: 'UserInsert' })">
                             <span slot="title">添加用户</span>
                         </el-menu-item>
                     </el-submenu>
@@ -39,7 +39,7 @@
                         <el-menu-item index="sectionQuery" @click="$router.push({ name: 'SectionQuery' })">
                             <span slot="title">部门查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="sectionInsert" @click="$router.push({ name: 'SectionInsert' })">
+                        <el-menu-item v-show="isManage" index="sectionInsert" @click="$router.push({ name: 'SectionInsert' })">
                             <span slot="title" >添加部门</span>
                         </el-menu-item>
                     </el-submenu>
@@ -51,7 +51,7 @@
                         <el-menu-item index="positionQuery" @click="$router.push({ name: 'PositionQuery' })">
                             <span slot="title">职位查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="positionInsert" @click="$router.push({ name: 'PositionInsert' })">
+                        <el-menu-item v-show="isManage" index="positionInsert" @click="$router.push({ name: 'PositionInsert' })">
                             <span slot="title" >添加职位</span>
                         </el-menu-item>
                     </el-submenu>
@@ -63,7 +63,7 @@
                         <el-menu-item index="employeeQuery" @click="$router.push({ name: 'EmployeeQuery' })">
                             <span slot="title">员工查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="employeeInsert" @click="$router.push({ name: 'EmployeeInsert' })">
+                        <el-menu-item v-show="isManage" index="employeeInsert" @click="$router.push({ name: 'EmployeeInsert' })">
                             <span slot="title" >添加员工</span>
                         </el-menu-item>
                     </el-submenu>
@@ -75,7 +75,7 @@
                         <el-menu-item index="noticeQuery" @click="$router.push({ name: 'NoticeQuery' })">
                             <span slot="title">公告查询</span>
                         </el-menu-item>
-                        <el-menu-item v-if="isShow" index="noticeInsert" @click="$router.push({ name: 'NoticeInsert' })">
+                        <el-menu-item v-if="isManage" index="noticeInsert" @click="$router.push({ name: 'NoticeInsert' })">
                             <span slot="title" >添加公告</span>
                         </el-menu-item>
                     </el-submenu>
@@ -84,7 +84,7 @@
                             <i class="el-icon-star-off"></i>
                             <span>下载中心</span>
                         </template>
-                        <el-menu-item v-show="isShow" index="uploadFile" @click="$router.push({ name: 'UploadFile' })">
+                        <el-menu-item v-show="isManage" index="uploadFile" @click="$router.push({ name: 'UploadFile' })">
                             <span slot="title" >上传文档</span>
                         </el-menu-item>
                         <el-menu-item index="fileQuery" @click="$router.push({ name: 'FileQuery' })">
@@ -111,7 +111,13 @@
                 // 用于拼接当前图标的 class 样式
                 iconSize: 'true',
                 //管理员为true，普通用户为false
-                isShow:true,
+                isManage:'',
+            }
+        },
+        methods:{
+            judgeStatus(){
+                this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                this.isManage = this.userInfo.status ===1;
             }
         },
         watch: {
@@ -120,6 +126,9 @@
                 this.asideWidth = val ? '200px' : '64px';
                 this.iconSize = val
             }
+        },
+        mounted() {
+            this.judgeStatus()
         }
     }
 </script>

@@ -89,7 +89,10 @@
             return{
                 userData:[],
                 userName:"",
-                isManage:true,
+                userInfo:"",
+
+                //权限
+                isManage:"",
                 dialogFormVisible:false,
                 user:{},
                 dialogTitle: {
@@ -239,9 +242,14 @@
                     this.$router.push({name: '404'});
                 });
             },
+            judgeStatus(){
+                this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                this.isManage = this.userInfo.status ===1;
+            }
         },
         mounted() {
             this.getUserList();
+            this.judgeStatus()
         },
     }
 </script>
