@@ -113,6 +113,8 @@ export default {
     },
     // 关闭摄像头
     closeCamera () {
+      this.$router.push({name:"Login"})
+
       if (!this.$refs['video'].srcObject) {
         this.dialogCamera = false
         return
@@ -124,7 +126,7 @@ export default {
       })
       this.$refs['video'].srcObject = null
 
-      this.$router.push({name:"Login"})
+
     },
   }
 }
