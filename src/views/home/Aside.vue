@@ -17,17 +17,21 @@
                         background-color 表示背景颜色。
                         text-color 表示字体颜色。
                     -->
-                <el-menu :default-active="menuActiveName || 'home'" :collapse="!foldAside" :collapseTransition="false"
-                         background-color="#263238" text-color="#8a979e">
+                <el-menu :default-active="$route.path"
+                         :collapse="!foldAside"
+                         :collapseTransition="false"
+                         background-color="#263238"
+                         text-color="#8a979e"
+                          router>
                     <el-submenu index="userManage">
                         <template slot="title">
                             <i class="el-icon-star-off"></i>
                             <span>用户管理</span>
                         </template>
-                        <el-menu-item index="userQuery" @click="$router.push({ name: 'UserQuery' })">
+                        <el-menu-item index="/Home/UserQuery">
                             <span slot="title">用户查询</span>
                         </el-menu-item>
-                        <el-menu-item  v-show="isManage" index="userInsert" @click="$router.push({ name: 'UserInsert' })">
+                        <el-menu-item  v-show="isManage" index="/Home/UserInsert">
                             <span slot="title">添加用户</span>
                         </el-menu-item>
                     </el-submenu>
@@ -36,10 +40,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>部门管理</span>
                         </template>
-                        <el-menu-item index="sectionQuery" @click="$router.push({ name: 'SectionQuery' })">
+                        <el-menu-item index="/Home/PositionQuery">
                             <span slot="title">部门查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isManage" index="sectionInsert" @click="$router.push({ name: 'SectionInsert' })">
+                        <el-menu-item v-show="isManage" index="/Home/PositionInsert">
                             <span slot="title" >添加部门</span>
                         </el-menu-item>
                     </el-submenu>
@@ -48,10 +52,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>职位管理</span>
                         </template>
-                        <el-menu-item index="positionQuery" @click="$router.push({ name: 'PositionQuery' })">
+                        <el-menu-item index="/Home/PositionQuery">
                             <span slot="title">职位查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isManage" index="positionInsert" @click="$router.push({ name: 'PositionInsert' })">
+                        <el-menu-item v-show="isManage" index="/Home/PositionInsert">
                             <span slot="title" >添加职位</span>
                         </el-menu-item>
                     </el-submenu>
@@ -60,10 +64,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>员工管理</span>
                         </template>
-                        <el-menu-item index="employeeQuery" @click="$router.push({ name: 'EmployeeQuery' })">
+                        <el-menu-item index="/Home/EmployeeQuery">
                             <span slot="title">员工查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isManage" index="employeeInsert" @click="$router.push({ name: 'EmployeeInsert' })">
+                        <el-menu-item v-show="isManage" index="/Home/EmployeeInsert">
                             <span slot="title" >添加员工</span>
                         </el-menu-item>
                     </el-submenu>
@@ -72,10 +76,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>公告管理</span>
                         </template>
-                        <el-menu-item index="noticeQuery" @click="$router.push({ name: 'NoticeQuery' })">
+                        <el-menu-item index="/Home/NoticeQuery">
                             <span slot="title">公告查询</span>
                         </el-menu-item>
-                        <el-menu-item v-if="isManage" index="noticeInsert" @click="$router.push({ name: 'NoticeInsert' })">
+                        <el-menu-item v-if="isManage" index="/Home/NoticeInsert">
                             <span slot="title" >添加公告</span>
                         </el-menu-item>
                     </el-submenu>
@@ -84,10 +88,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>下载中心</span>
                         </template>
-                        <el-menu-item v-show="isManage" index="uploadFile" @click="$router.push({ name: 'UploadFile' })">
+                        <el-menu-item v-show="isManage" index="/Home/UploadFile">
                             <span slot="title" >上传文档</span>
                         </el-menu-item>
-                        <el-menu-item index="fileQuery" @click="$router.push({ name: 'FileQuery' })">
+                        <el-menu-item index="/Home/FileQuery" >
                             <span slot="title">文档查询</span>
                         </el-menu-item>
                     </el-submenu>
