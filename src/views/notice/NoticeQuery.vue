@@ -100,6 +100,7 @@
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
+                            :show-word-limit="true"
                             v-model="textarea"
                     >
                     </el-input>

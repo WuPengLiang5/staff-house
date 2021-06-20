@@ -36,7 +36,7 @@
                     :formatter="statusFormat">
             </el-table-column>
             <el-table-column
-                    prop="status"
+                    prop="operation"
                     label="操作"
                     width="150"
                     align="center">
@@ -57,17 +57,21 @@
                        :total="userData.length">
         </el-pagination>
         <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-            <el-form ref="userData" :model="user" label-width="100px" >
-                <el-form-item label="登录名">
+            <el-form ref="user" :model="user" label-width="100px" >
+                <el-form-item label="登录名" prop="loginName">
                     <el-input v-model="user.loginName" :readonly="isDisabled"></el-input>
                 </el-form-item>
-                <el-form-item label="用户名">
+                <el-form-item label="用户名" prop="userName">
                     <el-input v-model="user.userName" :readonly="isDisabled"></el-input>
                 </el-form-item>
-                <el-form-item label="权限">
-                    <el-select v-model="user.status" :disabled="isDisabled" clearable placeholder="请选择" style="width: 100%">
-                        <el-option label="管理员" value="1"></el-option>
-                        <el-option label="普通用户" value="2"></el-option>
+                <el-form-item label="权限" prop="status">
+                    <el-select v-model="user.status" :disabled="isDisabled" placeholder="请选择" clearable style="width: 100%">
+                        <el-option
+                                v-for="item in options2"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="添加时间" v-show="!isUpdate">
@@ -89,7 +93,10 @@
             return{
                 userData:[],
                 userName:"",
-                isManage:true,
+                userInfo:"",
+
+                //权限
+                isManage:"",
                 dialogFormVisible:false,
                 user:{},
                 dialogTitle: {
@@ -104,16 +111,23 @@
                     value: 'all',
                     label: '全部'
                 },{
-                    value: '1',
+                    value: 1,
                     label: '管理员'
                 },{
-                    value: '2',
+                    value: 2,
+                    label: '普通用户'
+                }],
+                options2: [{
+                    value: 1,
+                    label: '管理员'
+                },{
+                    value: 2,
                     label: '普通用户'
                 }],
                 rangeValue:"",
                 //分页
                 pageSize:5,
-                currentPage:1
+                currentPage:1,
             }
         },
         methods:{
@@ -139,9 +153,9 @@
             //搜索
             selectUser(){
                 if(this.userName === ""){
-                    if(this.rangeValue ==="all"){
+                    if(this.rangeValue ==="all" ||this.rangeValue ===""){
                         this.getUserList();
-                    }else if(this.rangeValue ==="1"){
+                    }else if(this.rangeValue ===1){
                         this.$axios.post("user/listUserInfoByStatus?status="+1).then((resp)=>{
                             this.userData = resp.data;
                         })
@@ -152,7 +166,9 @@
                     }
                 }else {
                     this.$axios.post("user/getUserInfoByUserName?userName="+this.userName).then((resp)=>{
-                        this.userData=[resp.data];
+                        if(resp.data!==null){
+                            this.userData=resp.data;
+                        }
                     })
                 }
             },
@@ -162,13 +178,8 @@
                 this.dialogStatus = "checkInfo";
                 this.isUpdate = false;
                 this.isDisabled = true;
+                this.user = {};
                 this.user = row;
-                if(row.status === 1){
-                    this.user.status ="管理员";
-                }else {
-                    this.user.status ="普通用户";
-                }
-                console.log(this.user);
             },
             //删除
             deleteUser(row){
@@ -194,24 +205,13 @@
             updateUserInfo(row){
                 this.dialogFormVisible = true;
                 this.dialogStatus = "updateInfo";
-                this.user = row;
-                if(row.status === 1){
-                    this.user.status ="管理员";
-                }else {
-                    this.user.status ="普通用户";
-                }
+                this.user = {};
+                this.user = JSON.parse(JSON.stringify(row));
                 this.isUpdate = true;
                 this.isDisabled = false;
             },
             //修改实现
             updateUserInfoImpl(){
-                console.log(this.user);
-                if(this.user.status === "管理员"){
-                    this.user.status = 1;
-                }
-                if(this.user.status === "普通用户"){
-                    this.user.status = 2;
-                }
                 this.$axios.post("/user/updateUserInfoById",this.user).then((resp)=>{
                     this.dialogFormVisible = false;
                     if (resp) {
@@ -237,9 +237,14 @@
                     this.$router.push({name: '404'});
                 });
             },
+            judgeStatus(){
+                this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                this.isManage = this.userInfo.status ===1;
+            }
         },
         mounted() {
             this.getUserList();
+            this.judgeStatus()
         },
     }
 </script>

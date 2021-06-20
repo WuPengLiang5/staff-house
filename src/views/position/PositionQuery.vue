@@ -15,7 +15,7 @@
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
-        border="true"
+        :border="true"
         style="width: 100%"
         :cell-style="rowClass"
         :header-cell-style="rowClass"
@@ -45,8 +45,8 @@
       <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="5"
+          :current-page="currentPage"
+          :page-sizes="[100, 200, 300, 400]"
           :page-size="100"
           layout="total, sizes, prev, pager, next, jumper"
           :total="400">
@@ -129,6 +129,7 @@ export default {
         label: '管理员'
       }],
       rangeValue: "",
+      currentPage:0,
     }
   },
   methods: {
@@ -172,7 +173,16 @@ export default {
       this.user.id = row;
       this.isUpdate = true;
       this.isDisabled = false;
-    }
+    },
+    searchPosition(){
+
+    },
+    handleSizeChange(){
+
+    },
+    handleCurrentChange(){
+
+    },
   }
 }
 </script>
