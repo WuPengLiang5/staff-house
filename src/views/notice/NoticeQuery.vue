@@ -81,7 +81,7 @@
             <div class="login">
                 <h1>Duang</h1>
                 <p>今天吃肉喝水，干干干</p>
-                <sp style="float: right;padding-right: 30px">日期：2020.7.8</sp>
+                <span style="float: right;padding-right: 30px">日期：2020.7.8</span>
                 <p style="margin-left: 560px">公告人：无哦</p>
             </div>
         </div>
@@ -100,7 +100,7 @@
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
-                            show-word-limit="true"
+                            :show-word-limit="true"
                             v-model="textarea"
                     >
                     </el-input>
@@ -136,7 +136,7 @@
                 overView:0,
                 overView2:0,
                 editView:0,
-                popup: 0,
+                popup: false,
                 tableData: [{
                     title:"Duang",
                     date: '2016-05-02',
@@ -167,12 +167,12 @@
             },
             //打开活动规则页面
             showpopup(){
-                this.popup = 1;
+                this.popup = true;
                 this.overView = 1;
             },
             //关闭活动规则页面
             closepopup() {
-                this.popup = 0;
+                this.popup = false;
                 this.overView = 0;
             },
             handleClick(row) {
