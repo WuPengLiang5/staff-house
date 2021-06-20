@@ -31,7 +31,7 @@
                         <el-menu-item index="/Home/UserQuery">
                             <span slot="title">用户查询</span>
                         </el-menu-item>
-                        <el-menu-item  v-show="isShow" index="/Home/UserInsert">
+                        <el-menu-item  v-show="isManage" index="/Home/UserInsert">
                             <span slot="title">添加用户</span>
                         </el-menu-item>
                     </el-submenu>
@@ -43,7 +43,7 @@
                         <el-menu-item index="/Home/PositionQuery">
                             <span slot="title">部门查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="/Home/PositionInsert">
+                        <el-menu-item v-show="isManage" index="/Home/PositionInsert">
                             <span slot="title" >添加部门</span>
                         </el-menu-item>
                     </el-submenu>
@@ -55,7 +55,7 @@
                         <el-menu-item index="/Home/PositionQuery">
                             <span slot="title">职位查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="/Home/PositionInsert">
+                        <el-menu-item v-show="isManage" index="/Home/PositionInsert">
                             <span slot="title" >添加职位</span>
                         </el-menu-item>
                     </el-submenu>
@@ -67,7 +67,7 @@
                         <el-menu-item index="/Home/EmployeeQuery">
                             <span slot="title">员工查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isShow" index="/Home/EmployeeInsert">
+                        <el-menu-item v-show="isManage" index="/Home/EmployeeInsert">
                             <span slot="title" >添加员工</span>
                         </el-menu-item>
                     </el-submenu>
@@ -79,7 +79,7 @@
                         <el-menu-item index="/Home/NoticeQuery">
                             <span slot="title">公告查询</span>
                         </el-menu-item>
-                        <el-menu-item v-if="isShow" index="/Home/NoticeInsert">
+                        <el-menu-item v-if="isManage" index="/Home/NoticeInsert">
                             <span slot="title" >添加公告</span>
                         </el-menu-item>
                     </el-submenu>
@@ -88,7 +88,7 @@
                             <i class="el-icon-star-off"></i>
                             <span>下载中心</span>
                         </template>
-                        <el-menu-item v-show="isShow" index="/Home/UploadFile">
+                        <el-menu-item v-show="isManage" index="/Home/UploadFile">
                             <span slot="title" >上传文档</span>
                         </el-menu-item>
                         <el-menu-item index="/Home/FileQuery" >
@@ -115,7 +115,13 @@
                 // 用于拼接当前图标的 class 样式
                 iconSize: 'true',
                 //管理员为true，普通用户为false
-                isShow:true,
+                isManage:'',
+            }
+        },
+        methods:{
+            judgeStatus(){
+                this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                this.isManage = this.userInfo.status ===1;
             }
         },
         watch: {
@@ -124,6 +130,9 @@
                 this.asideWidth = val ? '200px' : '64px';
                 this.iconSize = val
             }
+        },
+        mounted() {
+            this.judgeStatus()
         }
     }
 </script>

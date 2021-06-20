@@ -22,7 +22,7 @@
                 <el-menu-item title="用户设置" index="3">
                     <template slot="title">
                         <span class="header-span">
-                            <img src="../../assets/login_backPicture.jpg" :alt="userName"> {{ userName }}
+                            <img src="../../assets/login_backPicture.jpg" :alt="userInfo.loginName"> {{ userInfo.loginName }}
                         </span>
                     </template>
                 </el-menu-item>
@@ -44,10 +44,10 @@
             return {
                 // 是否展开侧边栏
                 foldAside: true,
-                // 默认用户名
-                userName: 'admin',
                 // 是否展开密码框
-                UpdatePasswordVisible: false
+                UpdatePasswordVisible: false,
+
+                userInfo:{},
             }
         },
         components: {
@@ -80,8 +80,11 @@
               this.$router.push({
                 name: "Login"
               })
-            }
-        }
+            },
+        },
+        mounted() {
+            this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+        },
     }
 </script>
 
