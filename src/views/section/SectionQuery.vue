@@ -44,9 +44,9 @@
                     width="220px"
                     align="center"
             >
-                <template >
-                    <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
+                <template>
                     <el-button type="text" size="small" @click="edit">编辑</el-button>
+                    <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -83,7 +83,7 @@
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item style="margin-right: 180px">
-                    <el-button type="primary" @click="success">修改</el-button>
+                    <el-button type="primary" @click="success1">修改</el-button>
                     <el-button type="primary" @click="close">取消</el-button>
                 </el-form-item>
             </el-form>
@@ -132,6 +132,14 @@
             success(){
                 this.$message({
                     message: '添加成功',
+                    type: 'success'
+                });
+                this.overView2 = false;
+                this.editView = false;
+            },
+            success1(){
+                this.$message({
+                    message: '修改成功',
                     type: 'success'
                 });
                 this.overView2 = false;
