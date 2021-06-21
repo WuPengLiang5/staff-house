@@ -240,11 +240,20 @@
             judgeStatus(){
                 this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
                 this.isManage = this.userInfo.status ===1;
+            },
+            init(){
+                this.userName="";
+                this.rangeValue="";
             }
         },
         mounted() {
             this.getUserList();
             this.judgeStatus()
+        },
+        watch: {  //监听
+            $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+                this.init()
+            }
         },
     }
 </script>

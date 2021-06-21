@@ -48,9 +48,12 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.$axios.post("/user/saveUserInfo",this.user).then( (resp)=>{
-                            if (resp) {
-                                this.$message.success("添加成功！");
+                            if (resp.data === 1) {
+                                this.$message.success("添加用户成功！");
                                 this.clearAll('user');
+                            }
+                            else {
+                                this.$message.error("该用户已存在！");
                             }
                         }).catch((error)=>{
                             this.$message({
@@ -67,8 +70,16 @@
                     }
                 })
                 // this.$router.push({name:'404'});
+            },
+            init(){
+                this.user={};
             }
-        }
+        },
+        watch: {  //监听
+            $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+                this.init()
+            }
+        },
     }
 </script>
 
