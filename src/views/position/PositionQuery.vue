@@ -7,13 +7,13 @@
       </el-breadcrumb>
     </div>
     <div style="width:500px;margin:25px 0;">
-      <el-input v-model="studentName" placeholder="请输入职位" style="width:300px" clearable></el-input>
+      <el-input v-model="positionName" placeholder="请输入职位" style="width:300px"></el-input>
       <el-button type="primary" style="margin-left: 10px;" @click="searchPosition">搜索</el-button>
       <el-button type="primary" style="margin-left: 10px;" @click="deletePosition">删除选中</el-button>
     </div>
     <el-table
         ref="multipleTable"
-        :data="tableData"
+        :data="positions"
         tooltip-effect="dark"
         :border="true"
         style="width: 100%"
@@ -25,12 +25,12 @@
           width="100">
       </el-table-column>
       <el-table-column
-          prop="date"
+          prop="name"
           label="职位名称"
           width="500">
       </el-table-column>
       <el-table-column
-          prop="name"
+          prop="remark"
           label="详细信息"
           width="500">
       </el-table-column>
@@ -46,15 +46,15 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size=pageSize
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :total=totalPositions>
       </el-pagination>
     </div>
 
-    <el-dialog :title="dialogTitle[dialogStatu]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
+    <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+      <el-form ref="userData" :model="userData" :disabled="userData.status==='管理员'" label-width="100px">
         <el-form-item label="职位名称">
           <el-input v-model="userData.loginName"></el-input>
         </el-form-item>
@@ -64,7 +64,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" v-show="isUpdate">确 定</el-button>
+        <el-button type="primary" v-show="userData.status==='管理员'">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -75,66 +75,22 @@ export default {
   name: "positionQuery",
   data() {
     return {
-      tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      totalPositions: 0,
+      positionName: '',
+      positions: [],
       multipleSelection: [],
-      userData: [{loginName: "1212556", userName: "李二", status: "管理员"}],
-      studentName: "",
+      userData: {loginName: "1212556", userName: "李二", status: "管理员"},
       isManage: true,
       dialogFormVisible: false,
-      user: {},
-      dialogTitle: {
-        checkInfo: "查看信息",
-        updateInfo: "编辑信息"
-      },
-      isUpdate: false,
-      //是否禁用表单
-      isDisabled: true,
-      dialogStatu: "",
-      options: [{
-        value: 'all',
-        label: '全部'
-      }, {
-        value: '1',
-        label: '普通用户'
-      }, {
-        value: '2',
-        label: '管理员'
-      }],
-      rangeValue: "",
-      currentPage:0,
+      dialogTitle: '修改职位',
+      dialogStatus: "",
+      currentPage: 1,
+      pageSize: 5
     }
   },
   methods: {
-    modifyPosition(){
-      this.dialogFormVisible=true;
+    modifyPosition() {
+      this.dialogFormVisible = true;
     },
     rowClass() { //表格数据居中显示
       return "text-align:center"
@@ -151,9 +107,6 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    selectUser() {
-      this.userData = [{loginName: "888888888", userName: "李二", status: "普通用户"}];
-    },
     checkInfo(row) {
       this.dialogFormVisible = true;
       this.dialogStatu = "checkInfo";
@@ -167,22 +120,32 @@ export default {
       });
       this.user.id = row;
     },
-    updateUserInfo(row) {
-      this.dialogFormVisible = true;
-      this.dialogStatu = "updateInfo";
-      this.user.id = row;
-      this.isUpdate = true;
-      this.isDisabled = false;
-    },
-    searchPosition(){
+    searchPosition() {
 
     },
-    handleSizeChange(){
-
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.handleCurrentChange(1);
     },
-    handleCurrentChange(){
-
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.getAllJobsByLike()
     },
+    getAllJobsByLike() {
+      console.log(this.currentPage)
+      console.log(this.pageSize)
+      this.$axios.get('/job/getAllJobsByLike?page=' + this.currentPage + '&limit=' + this.pageSize).then(response => {
+        const data = response.data;
+        console.log(data.code);
+        console.log(data.msg);
+        console.log(data.data);
+        this.positions = data.data.records;
+        this.totalPositions = data.data.total;
+      })
+    }
+  },
+  mounted() {
+    this.getAllJobsByLike();
   }
 }
 </script>
