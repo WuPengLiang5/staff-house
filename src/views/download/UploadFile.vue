@@ -31,6 +31,12 @@
           </template>
         </el-upload>
       </el-form-item>
+      <el-form-item>
+        <el-row style="float: right;">
+          <el-button type="info" >取消</el-button>
+          <el-button type="primary">提交</el-button>
+        </el-row>
+      </el-form-item>
     </el-form>
 
 
