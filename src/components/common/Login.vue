@@ -69,7 +69,8 @@
                     console.log(resp.data)
                     if (resp.data.loginName!=="notfound"){
                       const userInfo = resp.data
-                      sessionStorage.setItem("userInfo", JSON.stringify(userInfo))
+                      sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+                      this.$store.commit("changeLogin",userInfo)
                       this.$router.push({name: 'Home'});
                     }else{
                       this.$message({
