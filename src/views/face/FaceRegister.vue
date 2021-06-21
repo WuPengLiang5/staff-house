@@ -16,7 +16,7 @@
           <!--图片展示-->
           <video ref="video" width="640" height="480" autoplay></video>
           <!--canvas截取流-->
-<!--      <canvas ref="canvas" width="320" height="240"></canvas>-->
+          <canvas ref="canvas" v-show="false" width="320" height="240"></canvas>
 
         </div>
       </div>
@@ -61,16 +61,25 @@ export default {
       let fileLength = parseInt(strLength - (strLength / 8) * 2)
       // 图片尺寸  用于判断
       let size = (fileLength / 1024).toFixed(2)
-      console.log(size)
+
+      const config = {
+        header:{
+          "Content-Type":"multipart/form-data"
+        },
+        method:'post',
+        url:'/login/faceRegister',
+        data:{
+          "base":str,
+          "userId":1
+        }
+      }
 
       // 上传拍照信息  调用接口上传图片 .........
-
-      // 保存到本地
-      // this.dialogCamera = false
-      // let ADOM = document.createElement('a')
-      // ADOM.href = URL.createObjectURL(str)
-      // ADOM.download = new Date().getTime() + '.jpeg'
-      // ADOM.click()
+      this.$axios(config).then(res=> {
+        if (res.data.message === "注册成功") {
+          this.closeCamera();
+        }
+      })
     },
     // 关闭摄像头
     closeCamera () {

@@ -21,7 +21,7 @@
                 width="60"
                 align="center"
     >
-            <input V-if="" type="checkbox">
+            <input  type="checkbox">
         </el-table-column>
         <el-table-column
                 fixed
@@ -81,7 +81,7 @@
             <div class="login">
                 <h1>Duang</h1>
                 <p>今天吃肉喝水，干干干</p>
-                <sp style="float: right;padding-right: 30px">日期：2020.7.8</sp>
+                <span style="float: right;padding-right: 30px">日期：2020.7.8</span>
                 <p style="margin-left: 560px">公告人：无哦</p>
             </div>
         </div>
@@ -100,7 +100,7 @@
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
-                            show-word-limit="true"
+                            :show-word-limit="true"
                             v-model="textarea"
                     >
                     </el-input>
@@ -133,10 +133,10 @@
                     region: '',
                     type: ''
                 },
-                overView:0,
-                overView2:0,
-                editView:0,
-                popup: 0,
+                overView:false,
+                overView2:false,
+                editView:false,
+                popup: false,
                 tableData: [{
                     title:"Duang",
                     date: '2016-05-02',
@@ -154,26 +154,26 @@
         methods: {
 
             close(){
-                this.overView2 = 0;
-                this.editView = 0;
+                this.overView2 = false;
+                this.editView = false;
             },
             success(){
                 this.$message({
                     message: '添加成功',
                     type: 'success'
             });
-                this.overView2 = 0;
-                this.editView = 0;
+                this.overView2 = false;
+                this.editView = false;
             },
             //打开活动规则页面
             showpopup(){
-                this.popup = 1;
-                this.overView = 1;
+                this.popup = true;
+                this.overView = true;
             },
             //关闭活动规则页面
             closepopup() {
-                this.popup = 0;
-                this.overView = 0;
+                this.popup = false;
+                this.overView = false;
             },
             handleClick(row) {
                 console.log(row);
@@ -181,8 +181,8 @@
             edit(){
                 this.addTitle='居然展示课';
                 this.textarea='今天上午，以及京津冀，死哦的hi奥vhiadiwydi';
-                this.editView=1;
-                this.overView2=1;
+                this.editView=true;
+                this.overView2=true;
             },
             open() {
                 this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {

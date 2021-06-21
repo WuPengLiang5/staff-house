@@ -13,7 +13,9 @@
             </el-select>
             <el-button type="primary" style="margin-left: 10px;" @click="selectUser">搜索</el-button>
         </div>
-        <el-table max-height="600" :data="userData">
+        <el-table max-height="800"
+                  ref="multipleTable"
+                  :data="userData.slice((currentPage-1)*pageSize,currentPage*pageSize)">
             <el-table-column
                     prop="loginName"
                     label="登录名"
@@ -30,10 +32,11 @@
                     prop="status"
                     label="权限"
                     weight="3"
-                    align="center">
+                    align="center"
+                    :formatter="statusFormat">
             </el-table-column>
             <el-table-column
-                    prop="status"
+                    prop="operation"
                     label="操作"
                     width="150"
                     align="center">
@@ -44,24 +47,40 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination background
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page="currentPage"
+                       :page-sizes="[1,5,10]"
+                       :page-size="pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="userData.length">
+        </el-pagination>
         <el-dialog :title="dialogTitle[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-            <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
-                <el-form-item label="登录名">
-                    <el-input v-model="userData.loginName"></el-input>
+            <el-form ref="user" :model="user" label-width="100px" >
+                <el-form-item label="登录名" prop="loginName">
+                    <el-input v-model="user.loginName" :readonly="isDisabled"></el-input>
                 </el-form-item>
-                <el-form-item label="用户名">
-                    <el-input v-model="userData.userName"></el-input>
+                <el-form-item label="用户名" prop="userName">
+                    <el-input v-model="user.userName" :readonly="isDisabled"></el-input>
                 </el-form-item>
-                <el-form-item label="权限">
-                    <el-select v-model="userData.status" clearable placeholder="请选择" style="width: 100%">
-                        <el-option label="管理员" value="2"></el-option>
-                        <el-option label="普通用户" value="1"></el-option>
+                <el-form-item label="权限" prop="status">
+                    <el-select v-model="user.status" :disabled="isDisabled" placeholder="请选择" clearable style="width: 100%">
+                        <el-option
+                                v-for="item in options2"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="添加时间" v-show="!isUpdate">
+                    <el-input v-model="user.createDate" :readonly="isDisabled"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" v-show="isUpdate">确 定</el-button>
+                <el-button type="primary" v-show="isUpdate" @click="updateUserInfoImpl">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -74,7 +93,10 @@
             return{
                 userData:[],
                 userName:"",
-                isManage:true,
+                userInfo:"",
+
+                //权限
+                isManage:"",
                 dialogFormVisible:false,
                 user:{},
                 dialogTitle: {
@@ -89,31 +111,84 @@
                     value: 'all',
                     label: '全部'
                 },{
-                    value: '1',
-                    label: '普通用户'
-                },{
-                    value: '2',
+                    value: 1,
                     label: '管理员'
+                },{
+                    value: 2,
+                    label: '普通用户'
+                }],
+                options2: [{
+                    value: 1,
+                    label: '管理员'
+                },{
+                    value: 2,
+                    label: '普通用户'
                 }],
                 rangeValue:"",
+                //分页
+                pageSize:5,
+                currentPage:1,
             }
         },
         methods:{
-            selectUser(){
-               this.userData=[{loginName:"888888888",userName:"李二",status:"普通用户"}];
+            //表格中权限显示
+            statusFormat(row) {
+                if (row.status === 1) {
+                    return '管理员'
+                }else  {
+                    return '普通用户'
+                }
             },
+            //每页条数改变时触发 选择一页显示多少行
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+                this.currentPage = 1;
+                this.pageSize = val;
+            },
+            //当前页改变时触发 跳转其他页
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+                this.currentPage = val;
+            },
+            //搜索
+            selectUser(){
+                if(this.userName === ""){
+                    if(this.rangeValue ==="all" ||this.rangeValue ===""){
+                        this.getUserList();
+                    }else if(this.rangeValue ===1){
+                        this.$axios.post("user/listUserInfoByStatus?status="+1).then((resp)=>{
+                            this.userData = resp.data;
+                        })
+                    }else {
+                        this.$axios.post("user/listUserInfoByStatus?status="+2).then((resp)=>{
+                            this.userData = resp.data;
+                        })
+                    }
+                }else {
+                    this.$axios.post("user/getUserInfoByUserName?userName="+this.userName).then((resp)=>{
+                        if(resp.data!==null){
+                            this.userData=resp.data;
+                        }
+                    })
+                }
+            },
+            //查看
             checkInfo(row){
                 this.dialogFormVisible = true;
                 this.dialogStatus = "checkInfo";
-                this.user.id = row.id;
+                this.isUpdate = false;
+                this.isDisabled = true;
+                this.user = {};
+                this.user = row;
             },
+            //删除
             deleteUser(row){
                 this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$axios.post("/user/deleteUserById?id="+row.id).then((resp)=> {
+                    this.$axios.get("/user/deleteUserById?id="+row.id).then((resp)=> {
                         if (resp) {
                             this.getUserList();
                             this.$message.success("删除成功！");
@@ -126,15 +201,33 @@
                     });
                 });
             },
+            //修改
             updateUserInfo(row){
                 this.dialogFormVisible = true;
                 this.dialogStatus = "updateInfo";
-                this.user.id = row;
+                this.user = {};
+                this.user = JSON.parse(JSON.stringify(row));
                 this.isUpdate = true;
                 this.isDisabled = false;
             },
+            //修改实现
+            updateUserInfoImpl(){
+                this.$axios.post("/user/updateUserInfoById",this.user).then((resp)=>{
+                    this.dialogFormVisible = false;
+                    if (resp) {
+                        this.$message.success("修改成功!");
+                        this.selectUser();
+                    }
+                }).catch((error)=> {
+                    this.$message({
+                        type: 'error',
+                        message: '数据更新失败，原因是'+error.toString()
+                    })
+                })
+            },
+            //得到用户列表
             getUserList(){
-                this.$axios.get("/user/listUserInfo").then((resp)=> {
+                this.$axios.post("/user/listUserInfo").then((resp)=> {
                     this.userData = resp.data;
                 }).catch(error =>{
                     this.$message({
@@ -143,10 +236,15 @@
                     });
                     this.$router.push({name: '404'});
                 });
+            },
+            judgeStatus(){
+                this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+                this.isManage = this.userInfo.status ===1;
             }
         },
         mounted() {
             this.getUserList();
+            this.judgeStatus()
         },
     }
 </script>

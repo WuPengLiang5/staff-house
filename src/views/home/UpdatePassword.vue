@@ -23,6 +23,7 @@
 
 <script>
     export default {
+      name:'UpdatePassword',
         data() {
             return {
                 loginName: '123',

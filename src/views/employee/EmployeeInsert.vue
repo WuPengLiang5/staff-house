@@ -7,7 +7,7 @@
       </el-breadcrumb>
     </div>
     <div style="padding-top: 50px;text-align: left">
-      <el-form ref="positionData" :model="positionData" inline="true" label-width="90px" label-position="left">
+      <el-form ref="positionData" :model="positionData" :inline="true" label-width="90px" label-position="left">
         <el-form-item label="姓名">
           <el-input v-model="positionData.loginName"></el-input>
         </el-form-item>
@@ -15,7 +15,7 @@
           <el-input v-model="positionData.loginName"></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <el-select v-model="selected" placeholder="--请选择性别--">
+          <el-select v-model="value" placeholder="--请选择性别--">
             <el-option
                 v-for="item in sexOption"
                 :key="item.value"
@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="职位">
-          <el-select v-model="selected" placeholder="--请选择职位--">
+          <el-select v-model="value" placeholder="--请选择职位--">
             <el-option
                 v-for="item in sexOption"
                 :key="item.value"
@@ -74,7 +74,7 @@
           <el-input v-model="positionData.loginName"></el-input>
         </el-form-item>
         <el-form-item label="所属部门">
-          <el-select v-model="selected" placeholder="--请选择所属部门--">
+          <el-select v-model="value" placeholder="--请选择所属部门--">
             <el-option
                 v-for="item in sexOption"
                 :key="item.value"
@@ -83,7 +83,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="clearAll">清空</el-button>
@@ -100,6 +99,14 @@ export default {
   data() {
     return {
       positionData: {loginName: "", userName: "李二"},
+      sexOption:[{
+        value: '男',
+        label: '男'
+      }, {
+        value: '女',
+        label: '女'
+      }],
+      value:''
     }
   },
   methods: {
@@ -108,7 +115,7 @@ export default {
     },
     goBack() {
       console.log('go back');
-    }
+    },
   }
 }
 </script>
