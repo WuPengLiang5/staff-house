@@ -40,10 +40,10 @@
                             <i class="el-icon-star-off"></i>
                             <span>部门管理</span>
                         </template>
-                        <el-menu-item index="/Home/PositionQuery">
+                        <el-menu-item index="/Home/SectionQuery">
                             <span slot="title">部门查询</span>
                         </el-menu-item>
-                        <el-menu-item v-show="isManage" index="/Home/PositionInsert">
+                        <el-menu-item v-show="isManage" index="/Home/SectionInsert">
                             <span slot="title" >添加部门</span>
                         </el-menu-item>
                     </el-submenu>

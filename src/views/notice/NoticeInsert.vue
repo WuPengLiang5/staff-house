@@ -9,7 +9,7 @@
             <el-divider></el-divider>
             <el-form-item label="公告内容" style="margin-right: 120px" >
                 <el-input
-                        v-model="text"
+                        v-model="content"
                         type="textarea"
                         :autosize="{ minRows: 10, maxRows: 10}"
                         placeholder="请输入内容"
@@ -19,7 +19,7 @@
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item style="margin-right: 120px">
-                <el-button type="primary" @click="add">添加</el-button>
+                <el-button type="primary" @click="saveNotice">添加</el-button>
                 <el-button type="primary" @click="rebuild">重置</el-button>
             </el-form-item>
         </el-form>
@@ -32,22 +32,56 @@
         name: "NoticeInsert",
         data(){
             return{
+                userInfo:JSON.parse(sessionStorage.getItem("userInfo")),
                 title:"",
-                text:""
+                content:""
             }
         },
         methods:{
             rebuild(){
                 this.title="";
-                this.text="";
+                this.content="";
             },
-            add(){
-                this.$message({
-                    message: '添加成功',
-                    type: 'success'
-                });
-                this.title="";
-                this.text="";
+            saveNotice(){
+                let nowDate = new Date();
+                let date = {
+                    year: nowDate.getFullYear(),
+                    month: nowDate.getMonth() + 1,
+                    date: nowDate.getDate(),
+                }
+                console.log(date);
+                let createDate = date.year + '-' + date.month + '-' + date.date;
+
+                const config={
+                    url:"/notice/saveNotice",
+                    method:"post",
+                    data:{
+                        'userId':this.userInfo.id,
+                        'content':this.content,
+                        'title':this.title,
+                        'createDate':createDate,
+                    }
+                }
+
+                this.$axios(config).then((resp)=>{
+
+                    if (resp.status===200){
+                        this.$message({
+                            message: '添加成功',
+                            type: 'success'
+                        });
+                        this.title="";
+                        this.content="";
+                        this.$router.push("/Home/NoticeQuery")
+                    }else{
+                        this.$message({
+                            message: '添加失败',
+                            type: 'error'
+                        });
+                    }
+                })
+                console.log(this.userInfo)
+
             }
         }
     }
