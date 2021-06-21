@@ -29,11 +29,6 @@ export default {
   name: "FaceLogin",
   data() {
     return {
-      user:{
-        userId:"",
-        userName:"",
-        status:""
-      }
     }
   },
   methods: {
@@ -88,20 +83,12 @@ export default {
 
       // 上传拍照信息  调用接口上传图片 .........
       this.$axios(config).then(res=>{
-        // 保存并查看返回的数据
-        this.user.userId = res.data.id;
-        this.user.userName = res.data.loginName;
-        this.user.status = res.data.status;
-        console.log(res.data)
-        console.log(this.user)
-
         if (this.user.userId !== null && this.user.userName!==null && this.user.status !== null) {
           // 如果数据存在则存入sessionStorage中方便后续使用
           // 关闭摄像机
           this.closeCamera();
-          sessionStorage.setItem('userId',this.user.userId);
-          sessionStorage.setItem('userName',this.user.userName);
-          sessionStorage.setItem('status',this.user.status);
+          const userInfo = res.data
+          sessionStorage.setItem("userInfo", JSON.stringify(userInfo))
           // 登录成功，跳转到首页
           this.$router.push({name:"Home"})
         } else {
