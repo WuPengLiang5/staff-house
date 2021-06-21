@@ -230,21 +230,26 @@
                 this.$axios.post("/user/listUserInfo").then((resp)=> {
                     this.userData = resp.data;
                 }).catch(error =>{
-                    this.$message({
-                        type: 'error',
-                        message: "查询失败，原因是"+error.toString(),
-                    });
                     this.$router.push({name: '404'});
                 });
             },
             judgeStatus(){
                 this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
                 this.isManage = this.userInfo.status ===1;
+            },
+            init(){
+                this.userName="";
+                this.rangeValue="";
             }
         },
         mounted() {
             this.getUserList();
             this.judgeStatus()
+        },
+        watch: {  //监听
+            $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+                this.init()
+            }
         },
     }
 </script>

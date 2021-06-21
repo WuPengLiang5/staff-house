@@ -9,11 +9,8 @@
     <div style="width:400px;margin: 0 auto;padding-top: 50px">
       <el-form ref="positionData" :model="positionData">
         <el-form-item label="职位名称">
-          <el-input v-model="positionData.loginName" style="width: 300px"></el-input>
+          <el-input v-model="positionData.name" style="width: 300px" placeholder="请输入职位"></el-input>
         </el-form-item>
-        <!--        <el-form-item label="详细描述">-->
-        <!--          <el-input v-model="positionData.userName" style="width: 300px"></el-input>-->
-        <!--        </el-form-item>-->
         <el-form-item label="详细描述">
           <el-input
               style="width: 300px"
@@ -21,14 +18,14 @@
               autosize
               :rows="2"
               placeholder="请输入内容"
-              v-model="positionData.userName">
+              v-model="positionData.remark">
           </el-input>
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="clearAll">清空</el-button>
-        <el-button type="primary">添 加</el-button>
+        <el-button type="primary" @click="addPosition">添 加</el-button>
       </div>
     </div>
 
@@ -40,15 +37,18 @@ export default {
   name: "positionInsert",
   data() {
     return {
-      positionData: {loginName: "1212556", userName: "李二"},
+      positionData: {name: '', remark: ''},
     }
   },
   methods: {
-    clearAll() {
-      this.userData = {};
+    addPosition() {
+      this.$axios.post('/job/addJob', this.positionData).then(res => {
+        this.$message.success(res.data.msg);
+      })
+      this.clearAll();
     },
-    goBack() {
-      console.log('go back');
+    clearAll() {
+      this.positionData = {name: '', remark: ''};
     }
   }
 }

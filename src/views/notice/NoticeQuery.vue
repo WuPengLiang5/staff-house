@@ -1,88 +1,83 @@
 <template>
     <div>
-
         <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">公告名称：</div>
-            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入公告名称"></el-input>
+            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="noticeTitle" placeholder="请输入公告名称"></el-input>
             <div style="float: left;color: #336dff;padding-left: 5px;margin-top: 14px">公告内容 ：</div>
-            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input2" placeholder="请输入公告内容"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary">搜索</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">清空</el-button>
+            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="noticeContent" placeholder="请输入公告内容"></el-input>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="search">搜索</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery">删除</el-button>
         </div>
-    <el-table
+        <el-table
             :data="tableData"
+            ref="multipleTable "
             border
             style="width: 100%"
             margin="auto"
-    >
+            @selection-change="selectionChange">
+            <el-table-column
+                    type="selection"
+                    fixed
+                    width="60"
+                    align="center">
+            </el-table-column>
 
-    <el-table-column
-                fixed
-                width="60"
-                align="center"
-    >
-            <input  type="checkbox">
-        </el-table-column>
-        <el-table-column
+
+            <el-table-column
                 fixed
                 prop="title"
                 label="公告名称"
                 width="150"
-                align="center"
-        >
+                align="center">
         </el-table-column>
         <el-table-column
                 prop="content"
                 label="公告内容"
-                width="300"
-                align="center"
-        >
-
+                width="310"
+                align="center">
         </el-table-column>
         <el-table-column
-                prop="date"
+                prop="createDate"
                 label="创建时间"
                 width="150"
-                align="center"
-        >
-
+                align="center">
         </el-table-column>
         <el-table-column
-                prop="name"
+                prop="userName"
                 label="公告人"
                 width="150"
-                align="center"
-        >
+                align="center">
         </el-table-column>
         <el-table-column
-                    fixed="right"
                     label="操作"
                     width="150"
-                    align="center"
-        >
-                <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
-                <el-button type="text" size="small" @click="edit">编辑</el-button>
+                    align="center">
+            <template slot-scope="scope">
+                <el-button  type="text" size="small" v-on:click="deleteNotice(scope.row.id)" >删除</el-button>
+                <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+            </template>
         </el-table-column>
         <el-table-column
-                fixed="right"
                 label="预览"
                 width="100"
-                align="center"
-        >
-                <a class="el-icon-view"  @click="showpopup()" style="cursor: pointer"></a>
+                align="center">
+            <template slot-scope="scope">
+                <a class="el-icon-view"  @click="viewNotice(scope.row)" style="cursor: pointer"></a>
+            </template>
         </el-table-column>
     </el-table>
-    <el-pagination
+        <el-pagination
             background
             layout="prev, pager, next"
             :total="1">
     </el-pagination>
-        <div v-show="popup" >
+        <div v-show="view" >
             <div class="login">
-                <h1>Duang</h1>
-                <p>今天吃肉喝水，干干干</p>
-                <span style="float: right;padding-right: 30px">日期：2020.7.8</span>
-                <p style="margin-left: 560px">公告人：无哦</p>
+                <h1>{{notice.title}}</h1>
+                <p>{{notice.content}}</p>
+                <span style="float: right;padding-right: 30px">日期：{{notice.creatDate}}</span>
+                <p style="margin-left: 560px">公告人：{{notice.userName}}</p>
             </div>
         </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
@@ -91,7 +86,7 @@
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="公告名称" style="margin-right: 180px">
                     <el-input
-                    v-model="addTitle"></el-input>
+                    v-model="notice.title"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="公告内容" style="margin-right: 180px">
@@ -101,20 +96,18 @@
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
                             :show-word-limit="true"
-                            v-model="textarea"
-                    >
+                            v-model="notice.content">
                     </el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item style="margin-right: 180px">
-                    <el-button type="primary" @click="success">确定</el-button>
+                    <el-button type="primary" @click="updateNotice">确定</el-button>
                     <el-button type="primary" @click="close">取消</el-button>
                 </el-form-item>
             </el-form>
             <div id="editor"></div>
         </div>
-        </div>
-
+    </div>
 </template>
 
 <script>
@@ -123,10 +116,19 @@
         name: "NoticeQuery",
         data() {
             return {
-                input:'',
-                input2:'',
-                addTitle:'居然展示课',
-                textarea: '今天上午，以及京津冀，死哦的hi奥vhiadiwydi',
+                deleteArry:[],
+                isDisabled:true,
+                page:0,
+                pageCount:'',
+                notice:{
+                    userName:'',
+                    title:"",
+                    content:'',
+                    id:'',
+                    creatDate:'',
+                },
+                noticeTitle:'',
+                noticeContent:'',
                 labelPosition: 'right',
                 formLabelAlign: {
                     name: '',
@@ -136,64 +138,177 @@
                 overView:false,
                 overView2:false,
                 editView:false,
-                popup: false,
-                tableData: [{
-                    title:"Duang",
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    content:"今天吃肉喝水，干干干"
-
-                }, {
-                    title:'xiuxiu',
-                    date: '2016-05-04',
-                    name: '王小虎',
-                    content:"My me mini mystery main most money",
-                }]
+                view: false,
+                tableData:[],
+                allNotice:[]
             }
         },
         methods: {
+            selectionChange(selection){     // 参数selection返回所选行的各个分量
+                if(selection.length>0){
+                    this.isDisabled = false;
+                    this.deleteArry = selection;
+                }else{
+                    this.isDisabled = true;                }
+            },
+            // onePageNotice(){
+            //     console.log(this.allNotice)
+            //     this.tableData.add(this.allNotice[this.page*6])
+            //     this.tableData.add(this.allNotice[this.page*6+1])
+            //     this.tableData.add(this.allNotice[this.page*6+2])
+            //     this.tableData.add(this.allNotice[this.page*6+3])
+            //     this.tableData.add(this.allNotice[this.page*6+4])
+            //     this.tableData.add(this.allNotice[this.page*6+5])
+            // },
+            deleteNoticeByQuery(){
+                const idArr = [];
+                for(let i = 0;i < this.deleteArry.length;i++){
+                    idArr.push(this.deleteArry[i].id)
+                }
 
+                const config={
+                    url:"/notice/deleteNoticeByQuery",
+                    method:"post",
+                    data: {
+                        "ids":idArr
+                    }
+                }
+
+
+                this.$confirm('此操作将永久删除这些公告, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios(config).then((resp) => {
+                        if (resp.status === 200) {
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.listNotice()
+                        } else {
+                            this.$message({
+                                message: '删除失败',
+                                type: 'error'
+                            });
+                        }
+                    })
+                });
+            },
+            search(){
+                const config={
+                    url:"/notice/searchNotice",
+                    method:"post",
+                    data:{
+                        "title":this.noticeTitle,
+                        "content":this.noticeContent
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                        this.tableData=resp.data
+                    })
+            },
+            clearInput(){
+                this.noticeTitle=''
+                this.noticeContent=''
+                this.search()
+            },
+            listNotice(){
+                this.$axios.post("/notice/listNotice").then((resp)=>{
+                    this.tableData = resp.data
+                })
+                // this.pageCount = Math.ceil(this.allNotice.size/6)
+            },
             close(){
                 this.overView2 = false;
                 this.editView = false;
             },
-            success(){
-                this.$message({
-                    message: '添加成功',
-                    type: 'success'
-            });
+            updateNotice(){
+                const config={
+                    url:"/notice/updateNotice",
+                    method:"post",
+                    data:{
+                        'title':this.notice.title,
+                        'content':this.notice.content,
+                        'id':this.notice.id,
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                    console.log(resp.status)
+                    if (resp.status===200){
+                        this.$message({
+                            message: '编辑成功',
+                            type: 'success'
+                        });
+                        this.listNotice()
+                    }else{
+                        this.$message({
+                            message: '编辑失败',
+                            type: 'error'
+                        });
+                    }
+                })
                 this.overView2 = false;
                 this.editView = false;
             },
-            //打开活动规则页面
-            showpopup(){
-                this.popup = true;
+            /**
+             * 预览公告
+             * @param row
+             */
+            viewNotice(row){
+                this.notice.title = row.title;
+                this.notice.content = row.content;
+                this.notice.creatDate = row.createDate;
+                this.notice.userName = row.userName;
+                this.view = true;
                 this.overView = true;
             },
             //关闭活动规则页面
             closepopup() {
-                this.popup = false;
+                this.view = false;
                 this.overView = false;
             },
             handleClick(row) {
                 console.log(row);
             },
-            edit(){
-                this.addTitle='居然展示课';
-                this.textarea='今天上午，以及京津冀，死哦的hi奥vhiadiwydi';
+            edit(editNotice){
+                this.notice.id = editNotice.id;
+                this.notice.title = editNotice.title;
+                this.notice.content = editNotice.content;
                 this.editView=true;
                 this.overView2=true;
             },
-            open() {
+            deleteNotice(id){
+
+                const config={
+                    url:"/notice/deleteNotice",
+                    method:"post",
+                    params:{
+                        'id':id,
+                    }
+                }
+
                 this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
+                    this.$axios(config).then((resp)=>{
+
+                        if (resp.status===200){
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.listNotice()
+                        }else{
+                            this.$message({
+                                message: '删除失败',
+                                type: 'error'
+                            });
+                        }
+                    })
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -202,6 +317,19 @@
                 });
             }
         },
+        created(){
+            this.listNotice()
+        },
+        // watch:{
+        //     $route(){
+        //         this.listNotice()
+        //         //跳转到该页面后需要进行的操作
+        //     }
+        // },
+        activated(){
+        this.listNotice();//重新加载数据
+      },
+
     }
 </script>
 
