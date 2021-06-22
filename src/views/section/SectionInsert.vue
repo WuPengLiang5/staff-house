@@ -60,8 +60,8 @@
                             message: '添加成功',
                             type: 'success'
                         });
-                        this.name="";
-                        this.remark="";
+                        this.department.name="";
+                        this.department.remark="";
                         this.$router.push("/Home/SectionQuery")
                     }else{
                         this.$message({
