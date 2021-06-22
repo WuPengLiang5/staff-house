@@ -7,7 +7,7 @@
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="noticeContent" placeholder="请输入公告内容"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="search">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery" v-show="isManage">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery" v-if="isManage">删除</el-button>
         </div>
         <el-table
             :data="tableData"
