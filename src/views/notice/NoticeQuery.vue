@@ -34,7 +34,7 @@
         <el-table-column
                 prop="content"
                 label="公告内容"
-                width="310"
+                width="305"
                 align="center">
         </el-table-column>
         <el-table-column
@@ -67,21 +67,26 @@
             </template>
         </el-table-column>
     </el-table>
-        <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="1">
-    </el-pagination>
+        <div class="block">
+            <el-pagination
+                    @current-change="handleCurrentChange()"
+                    :current-page.sync="currentPage"
+                    :page-size="6"
+                    layout="prev, pager, next, jumper"
+                    :total="allNotice.length">
+            </el-pagination>
+        </div>
         <div v-show="view" >
-            <div class="login">
+            <div class="view">
+                <div id="head"><div style="float: left">公告预览</div></div>
                 <h1>{{notice.title}}</h1>
-                <p>{{notice.content}}</p>
-                <span style="float: right;padding-right: 30px">日期：{{notice.creatDate}}</span>
-                <p style="margin-left: 560px">公告人：{{notice.userName}}</p>
+                <div><p style="text-align:left;margin-left: 20px">{{notice.content}}</p></div>
+                <p style="text-align:right;margin-right: 10px">日期：{{notice.creatDate}}</p>
+                <p style="text-align:right;margin-right: 10px">公告人：{{notice.userName}}</p>
             </div>
         </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
-        <div v-show="overView2" class="over" @click="closepopup"></div>
+        <div v-show="overView2" class="over"></div>
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="公告名称" style="margin-right: 180px">
@@ -118,8 +123,8 @@
             return {
                 deleteArry:[],
                 isDisabled:true,
-                page:0,
-                pageCount:'',
+                currentPage:1,
+                pageCount:1,
                 notice:{
                     userName:'',
                     title:"",
@@ -144,6 +149,13 @@
             }
         },
         methods: {
+            handleCurrentChange(){
+                this.onePageNotice();
+            },
+            /**
+             * checkbox绑定值获取
+             *
+             */
             selectionChange(selection){     // 参数selection返回所选行的各个分量
                 if(selection.length>0){
                     this.isDisabled = false;
@@ -151,15 +163,27 @@
                 }else{
                     this.isDisabled = true;                }
             },
-            // onePageNotice(){
-            //     console.log(this.allNotice)
-            //     this.tableData.add(this.allNotice[this.page*6])
-            //     this.tableData.add(this.allNotice[this.page*6+1])
-            //     this.tableData.add(this.allNotice[this.page*6+2])
-            //     this.tableData.add(this.allNotice[this.page*6+3])
-            //     this.tableData.add(this.allNotice[this.page*6+4])
-            //     this.tableData.add(this.allNotice[this.page*6+5])
-            // },
+            onePageNotice(){
+                this.tableData=[];
+                this.pageCount = Math.ceil(this.allNotice.length/6)
+                // console.log(Math.ceil(this.allNotice.length/6))
+                // console.log(this.currentPage)
+                if(this.currentPage>this.pageCount)
+                    this.currentPage--;
+                for(let i=0;i<6;i++){
+                    if(this.allNotice[(this.currentPage-1)*6+i]==
+                            null){
+                        break;
+                    }
+                    this.tableData.push(this.allNotice[(this.currentPage-1)*6+i])
+                }
+
+                this.pageCount = Math.ceil(this.allNotice.size/6)
+            },
+            /**
+             * 批量删除
+             *
+             */
             deleteNoticeByQuery(){
                 const idArr = [];
                 for(let i = 0;i < this.deleteArry.length;i++){
@@ -196,6 +220,10 @@
                     })
                 });
             },
+            /**
+             * 查询
+             *
+             */
             search(){
                 const config={
                     url:"/notice/searchNotice",
@@ -206,24 +234,41 @@
                     }
                 }
                 this.$axios(config).then((resp)=>{
-                        this.tableData=resp.data
+                        this.allNotice=resp.data;
+                        this.onePageNotice();
                     })
             },
+            /**
+             * 清除查询框
+             *
+             */
             clearInput(){
                 this.noticeTitle=''
                 this.noticeContent=''
                 this.search()
             },
+            /**
+             * 获取所有公告
+             *
+             */
             listNotice(){
                 this.$axios.post("/notice/listNotice").then((resp)=>{
-                    this.tableData = resp.data
+                    this.allNotice = resp.data
+                    this.onePageNotice();
                 })
-                // this.pageCount = Math.ceil(this.allNotice.size/6)
             },
+            /**
+             * 关闭公告编辑窗口
+             *
+             */
             close(){
                 this.overView2 = false;
                 this.editView = false;
             },
+            /**
+             * 更新公告
+             *
+             */
             updateNotice(){
                 const config={
                     url:"/notice/updateNotice",
@@ -264,7 +309,7 @@
                 this.view = true;
                 this.overView = true;
             },
-            //关闭活动规则页面
+            //关闭预览
             closepopup() {
                 this.view = false;
                 this.overView = false;
@@ -272,6 +317,10 @@
             handleClick(row) {
                 console.log(row);
             },
+            /**
+             * 打开编辑窗口
+             *
+             */
             edit(editNotice){
                 this.notice.id = editNotice.id;
                 this.notice.title = editNotice.title;
@@ -279,6 +328,10 @@
                 this.editView=true;
                 this.overView2=true;
             },
+            /**
+             * 删除公告
+             *
+             */
             deleteNotice(id){
 
                 const config={
@@ -317,15 +370,16 @@
                 });
             }
         },
-        created(){
-            this.listNotice()
-        },
         // watch:{
         //     $route(){
         //         this.listNotice()
         //         //跳转到该页面后需要进行的操作
         //     }
         // },
+        /**
+         * 添加页面添加成功后，跳转刷新
+         *
+         */
         activated(){
         this.listNotice();//重新加载数据
       },
@@ -335,17 +389,24 @@
 
 <style scoped>
 
-    .login {
+    .view {
         position: fixed;
-        font-size: 24px;
         height: 360px;
-        width: 50%;
+        width: 670px;
         background-color: #ffffff;
         border-radius: 10px;
         margin-left: 40%;
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 1000;
+    }
+    .view #head{
+        width: 100%;
+        height: 5%;
+        font-size: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        background-image: linear-gradient(to bottom,white,cornflowerblue);
     }
     .over {
         position: fixed;

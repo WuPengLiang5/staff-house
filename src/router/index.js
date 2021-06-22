@@ -127,7 +127,7 @@ const router = new VueRouter({
 // 拦截器
 // 路由拦截
 router.beforeEach((to, from, next)=>{
-  if(to.path === '/Login'){
+  if(to.path === '/Login'||to.path ==='/FaceLogin'){
     next();
   }else{
     if(sessionStorage.getItem('Authorization')){
