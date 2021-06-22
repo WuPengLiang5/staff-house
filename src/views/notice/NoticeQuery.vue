@@ -30,9 +30,16 @@
                 align="center">
         </el-table-column>
         <el-table-column
-                prop="content"
                 label="公告内容"
                 align="center">
+            <template slot-scope="scope">
+                <div v-if="scope.row.content.length>=8">
+                    {{scope.row.content.slice(0,8)}}.....
+                </div>
+                <div v-else>
+                    {{scope.row.content}}
+                </div>
+            </template>
         </el-table-column>
         <el-table-column
                 prop="createDate"
@@ -159,6 +166,10 @@
                 }else{
                     this.isDisabled = true;                }
             },
+            /**
+             * 根据页号获取该页数据
+             *
+             */
             onePageNotice(){
                 this.tableData=[];
                 this.pageCount = Math.ceil(this.allNotice.length/6)
