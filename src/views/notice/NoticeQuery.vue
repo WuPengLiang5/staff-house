@@ -19,11 +19,9 @@
             <el-table-column
                     type="selection"
                     fixed
-                    width="60"
                     align="center"
-                    v-if="isManage">
+                    v-if="checkboxV">
             </el-table-column>
-
 
             <el-table-column
                 fixed
@@ -143,6 +141,7 @@
                 tableData:[],
                 allNotice:[],
                 isManage:false,
+                checkboxV:true,
             }
         },
         methods: {
@@ -368,12 +367,12 @@
             },
             judgeStatus(){
                 this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
+                this.checkboxV = this.isManage;
+                console.log(this.isManage)
             },
 
         },
-        mounted() {
-            this.judgeStatus()
-        },
+
         // watch:{
         //     $route(){
         //         this.listNotice()
@@ -384,6 +383,9 @@
          * 添加页面添加成功后，跳转刷新
          *
          */
+        mounted() {
+            this.judgeStatus();
+        },
         activated(){
         this.listNotice();//重新加载数据
       },
