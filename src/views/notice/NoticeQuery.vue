@@ -394,11 +394,9 @@
          * 添加页面添加成功后，跳转刷新
          *
          */
-        mounted() {
-            this.judgeStatus();
-        },
         activated(){
         this.listNotice();//重新加载数据
+            this.judgeStatus();
       },
 
     }
