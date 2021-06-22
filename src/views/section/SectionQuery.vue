@@ -41,11 +41,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="1">
-        </el-pagination>
+        <div class="block">
+            <el-pagination
+                    @current-change="handleCurrentChange()"
+                    :current-page.sync="currentPage"
+                    :page-size="4"
+                    layout="prev, pager, next, jumper"
+                    :total="allSection.length">
+            </el-pagination>
+        </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
         <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
@@ -82,7 +86,9 @@
         name: "DepartmentQuery",
         data() {
             return {
-                //
+                allSection:[],
+                allPage:1,
+                currentPage: 1,
                 deleteArr:[],
                 department:{
                     name:'',
@@ -100,19 +106,30 @@
                 overView:false,
                 overView2:false,
                 editView:false,
-                popup: false,
-                tableData: []
+                popup:false,
+                tableData:[],
             }
         },
-        created() {
+        activated() {
             this.listSection();
         },
         methods: {
+            onePage(){
+                this.tableData=[];
+                this.allPage=Math.ceil(this.allSection.length/4);
+                for(let i=0; i<4; i++){
+                    if(this.allSection[(this.currentPage-1)*4+i]==null){
+                        break;
+                    }
+                    this.tableData.push(this.allSection[(this.currentPage-1)*4+i]);
+                }
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+            handleCurrentChange() {
+                console.log(this.currentPage);
+                this.onePage()
             },
             selectChange(selection){     // 参数selection返回所选行的各个分量
                 if(selection.length>0){
@@ -146,7 +163,8 @@
             },
             listSection(){
                 this.$axios.post("/department/listDepartment").then((resp)=>{
-                    this.tableData = resp.data
+                    this.allSection = resp.data
+                    this.onePage();
                 })
             },
             clearInput(){
