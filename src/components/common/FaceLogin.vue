@@ -83,11 +83,11 @@ export default {
 
       // 上传拍照信息  调用接口上传图片 .........
       this.$axios(config).then(res=>{
-        if (this.user.userId !== null && this.user.userName!==null && this.user.status !== null) {
+        const userInfo = res.data
+        if (userInfo.userId !== null && userInfo.userName!==null && userInfo.status !== null) {
           // 如果数据存在则存入sessionStorage中方便后续使用
           // 关闭摄像机
           this.closeCamera();
-          const userInfo = res.data
           sessionStorage.setItem("userInfo", JSON.stringify(userInfo))
           // 登录成功，跳转到首页
           this.$router.push({name:"Home"})
