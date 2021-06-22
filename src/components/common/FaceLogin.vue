@@ -89,6 +89,7 @@ export default {
           // 关闭摄像机
           this.closeCamera();
           sessionStorage.setItem("userInfo", JSON.stringify(userInfo))
+          this.$store.commit("changeLogin",userInfo)
           // 登录成功，跳转到首页
           this.$router.push({name:"Home"})
         } else {
