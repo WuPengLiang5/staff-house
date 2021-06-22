@@ -7,19 +7,24 @@
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="noticeContent" placeholder="请输入公告内容"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="search">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery">删除</el-button>
         </div>
         <el-table
             :data="tableData"
+            ref="multipleTable "
             border
             style="width: 100%"
-            margin="auto">
-    <el-table-column
-                fixed
-                width="60"
-                align="center">
-            <input  type="checkbox">
-        </el-table-column>
-        <el-table-column
+            margin="auto"
+            @selection-change="selectionChange">
+            <el-table-column
+                    type="selection"
+                    fixed
+                    width="60"
+                    align="center">
+            </el-table-column>
+
+
+            <el-table-column
                 fixed
                 prop="title"
                 label="公告名称"
@@ -29,7 +34,7 @@
         <el-table-column
                 prop="content"
                 label="公告内容"
-                width="300"
+                width="310"
                 align="center">
         </el-table-column>
         <el-table-column
@@ -45,7 +50,6 @@
                 align="center">
         </el-table-column>
         <el-table-column
-                    fixed="right"
                     label="操作"
                     width="150"
                     align="center">
@@ -55,7 +59,6 @@
             </template>
         </el-table-column>
         <el-table-column
-                fixed="right"
                 label="预览"
                 width="100"
                 align="center">
@@ -113,6 +116,8 @@
         name: "NoticeQuery",
         data() {
             return {
+                deleteArry:[],
+                isDisabled:true,
                 page:0,
                 pageCount:'',
                 notice:{
@@ -139,6 +144,13 @@
             }
         },
         methods: {
+            selectionChange(selection){     // 参数selection返回所选行的各个分量
+                if(selection.length>0){
+                    this.isDisabled = false;
+                    this.deleteArry = selection;
+                }else{
+                    this.isDisabled = true;                }
+            },
             // onePageNotice(){
             //     console.log(this.allNotice)
             //     this.tableData.add(this.allNotice[this.page*6])
@@ -148,6 +160,42 @@
             //     this.tableData.add(this.allNotice[this.page*6+4])
             //     this.tableData.add(this.allNotice[this.page*6+5])
             // },
+            deleteNoticeByQuery(){
+                const idArr = [];
+                for(let i = 0;i < this.deleteArry.length;i++){
+                    idArr.push(this.deleteArry[i].id)
+                }
+
+                const config={
+                    url:"/notice/deleteNoticeByQuery",
+                    method:"post",
+                    data: {
+                        "ids":idArr
+                    }
+                }
+
+
+                this.$confirm('此操作将永久删除这些公告, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$axios(config).then((resp) => {
+                        if (resp.status === 200) {
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.listNotice()
+                        } else {
+                            this.$message({
+                                message: '删除失败',
+                                type: 'error'
+                            });
+                        }
+                    })
+                });
+            },
             search(){
                 const config={
                     url:"/notice/searchNotice",
@@ -211,7 +259,7 @@
             viewNotice(row){
                 this.notice.title = row.title;
                 this.notice.content = row.content;
-                this.notice.creatDate = row.creatDate;
+                this.notice.creatDate = row.createDate;
                 this.notice.userName = row.userName;
                 this.view = true;
                 this.overView = true;
@@ -280,7 +328,8 @@
         // },
         activated(){
         this.listNotice();//重新加载数据
-      }
+      },
+
     }
 </script>
 

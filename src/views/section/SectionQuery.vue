@@ -3,50 +3,41 @@
 
         <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">部门名称：</div>
-            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="input" placeholder="请输入部门名称"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary">搜索</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary">清空</el-button>
+            <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="search" placeholder="请输入部门名称"></el-input>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="deleteAllSelect">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
         </div>
         <el-table
-                :data="tableData"
+               @selection-change="selectChange"
+                :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())
+                                              || data.remark.includes(search))"
                 border
                 style="width: 100%"
-                margin="auto"
-        >
-
+                margin="auto">
             <el-table-column
-                    fixed
-                    width="110px"
-                    align="center"
-            >
-                <input type="checkbox">
+                    type="selection"
+                    width="110"
+                    align="center">
             </el-table-column>
             <el-table-column
-                    fixed
-                    prop="title"
+                    prop="name"
                     label="部门名称"
-                    width="550px"
-                    align="center"
-            >
+                    width="550"
+                    align="center">
             </el-table-column>
             <el-table-column
-                    prop="content"
+                    prop="remark"
                     label="详细描述"
-                    width="330px"
-                    align="center"
-            >
-
+                    width="330"
+                    align="center">
             </el-table-column>
-
             <el-table-column
-                    fixed="right"
                     label="操作"
-                    width="220px"
-                    align="center"
-            >
-                <template>
-                    <el-button type="text" size="small" @click="edit">编辑</el-button>
-                    <el-button  type="text" size="small" v-on:click="open" >删除</el-button>
+                    width="224"
+                    align="center">
+                <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+                    <el-button type="text" size="small" v-on:click="deleteId(scope.row.id)" >删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -55,20 +46,12 @@
                 layout="prev, pager, next"
                 :total="1">
         </el-pagination>
-        <div v-show="popup" >
-            <div class="login">
-                <h1>Duang</h1>
-                <p>今天吃肉喝水，干干干</p>
-                <span style="float: right;padding-right: 30px">日期：2020.7.8</span>
-                <p style="margin-left: 560px">公告人：无哦</p>
-            </div>
-        </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
         <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="部门名称" style="margin-right: 180px">
-                    <el-input value="技术部" v-model="name"></el-input>
+                    <el-input value="技术部" v-model="department.name"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="详细信息" style="margin-right: 180px">
@@ -77,13 +60,13 @@
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
-                            v-model="detail"
+                            v-model="department.remark"
                     >
                     </el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item style="margin-right: 180px">
-                    <el-button type="primary" @click="success1">修改</el-button>
+                    <el-button type="primary" @click="updateDepartment">修改</el-button>
                     <el-button type="primary" @click="close">取消</el-button>
                 </el-form-item>
             </el-form>
@@ -96,12 +79,17 @@
 <script>
 
     export default {
-        name: "NoticeQuery",
+        name: "DepartmentQuery",
         data() {
             return {
-                name:'',
-                detail:'',
-                input:'',
+                //
+                deleteArr:[],
+                department:{
+                    name:'',
+                    remark:'',
+                    id:''
+                },
+                search:'',
                 textarea: '',
                 labelPosition: 'right',
                 formLabelAlign: {
@@ -113,18 +101,57 @@
                 overView2:false,
                 editView:false,
                 popup: false,
-                tableData: [{
-                    title:"技术部",
-                    content:"技术部"
-
-                }, {
-                    title:'财务部',
-                    content:"财务部",
-                }]
+                tableData: []
             }
         },
+        created() {
+            this.listSection();
+        },
         methods: {
-
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+            },
+            selectChange(selection){     // 参数selection返回所选行的各个分量
+                if(selection.length>0){
+                    this.isDisabled = false;
+                    this.deleteArry = selection;
+                    console.log(this.deleteArry)
+                }else{
+                    this.isDisabled = true;                }
+            },
+            deleteAllSelect(){
+                this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then((resp) => {
+                    console.log(resp.status)
+                    let i;
+                    for (i = 0; i < this.deleteArry.length; i++) {
+                        this.deleteAllId(this.deleteArry[i].id)
+                    }
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+            listSection(){
+                this.$axios.post("/department/listDepartment").then((resp)=>{
+                    this.tableData = resp.data
+                })
+            },
+            clearInput(){
+                this.search = "";
+            },
             close(){
                 this.overView2 = false;
                 this.editView = false;
@@ -137,13 +164,30 @@
                 this.overView2 = false;
                 this.editView = false;
             },
-            success1(){
-                this.$message({
-                    message: '修改成功',
-                    type: 'success'
-                });
-                this.overView2 = false;
-                this.editView = false;
+            updateDepartment(){
+                const config={
+                    url:"/department/updateDepartment",
+                    method:"post",
+                    data:{
+                        'name':this.department.name,
+                        'remark':this.department.remark,
+                        'id':this.department.id,
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                    console.log(resp.status)
+                    if (resp.status===200){
+                        this.$message({
+                            message: '编辑成功',
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message({
+                            message: '编辑失败',
+                            type: 'error'
+                        });
+                    }
+                })
             },
             //打开活动规则页面
             showpopup(){
@@ -158,29 +202,66 @@
             handleClick(row) {
                 console.log(row);
             },
-            edit(){
-                this.name='jjjjjjjj'
-                this.detail='bbbbbbbbbbb'
+            edit(department){
+                this.department.id=department.id
+                this.department.name=department.name
+                this.department.remark=department.remark
                 this.editView=true
                 this.overView2=true;
             },
-            open() {
-                this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
+            deleteId(id) {
+                console.log(id)
+                this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
+                    const config={
+                        url:"/department/deleteDepartment",
+                        method:"post",
+                        params:{
+                            'departmentId':id,
+                        }
+                    }
+                    this.$axios(config).then((resp)=>{
+                        console.log(resp.status)
+                        if (resp.status===200){
+                            this.$message({
+                                message: '删除成功',
+                                type: 'success'
+                            });
+                            this.listSection()
+                        }else{
+                            this.$message({
+                                message: '删除失败',
+                                type: 'error'
+                            });
+                        }
+                    })
                 }).catch(() => {
                     this.$message({
                         type: 'info',
                         message: '已取消删除'
                     });
                 });
-            }
+            },
+            deleteAllId(id) {
+                console.log(id)
+                const config={
+                    url:"/department/deleteDepartment",
+                    method:"post",
+                    params:{
+                        'departmentId':id,
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                    console.log(resp.status)
+                    if (resp.status===200){
+                        this.listSection()
+                    }
+                })
+            },
+
         },
     }
 </script>

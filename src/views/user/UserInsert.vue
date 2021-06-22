@@ -56,10 +56,7 @@
                                 this.$message.error("该用户已存在！");
                             }
                         }).catch((error)=>{
-                            this.$message({
-                                message: '添加数据失败，原因是'+error.toString(),
-                                type: 'error'
-                            })
+                            this.$message.error("服务器异常！添加数据失败");
                         })
                     } else {
                         this.$message({
@@ -69,7 +66,6 @@
                         return false;
                     }
                 })
-                // this.$router.push({name:'404'});
             },
             init(){
                 this.user={};

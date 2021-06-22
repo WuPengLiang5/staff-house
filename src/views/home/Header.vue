@@ -22,7 +22,7 @@
                 <el-menu-item title="用户设置" index="3">
                     <template slot="title">
                         <span class="header-span">
-                            <img src="../../assets/login_backPicture.jpg" :alt="userInfo.loginName"> {{ userInfo.loginName }}
+                            <img src="../../assets/login_backPicture.jpg" :alt="userInfo.userName"> {{ userInfo.userName }}
                         </span>
                     </template>
                 </el-menu-item>
@@ -76,7 +76,7 @@
             // 退出登录，回到登录界面
             logout() {
                 // TODO：退出逻辑待完成
-              sessionStorage.setItem("userInfo", JSON.stringify(''))
+              sessionStorage.clear();
               this.$router.push({
                 name: "Login"
               })

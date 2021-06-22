@@ -4,22 +4,21 @@
         <div>
             <el-form  label-width="220px" style="margin-top: 50px;">
                 <el-form-item label="部门名称" style="margin-right: 120px" >
-                    <el-input v-model="title"></el-input>
+                    <el-input v-model="department.name"></el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item label="详细信息" style="margin-right: 120px" >
                     <el-input
-                            v-model="text"
+                            v-model="department.remark"
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
-                            show-word-limit="true"
-                    >
+                            :show-word-limit="true">
                     </el-input>
                 </el-form-item>
                 <el-divider></el-divider>
                 <el-form-item style="margin-right: 120px">
-                    <el-button type="primary" @click="add">添加</el-button>
+                    <el-button type="primary" @click="saveDepartment">添加</el-button>
                     <el-button type="primary" @click="rebuild">重置</el-button>
                 </el-form-item>
             </el-form>
@@ -29,25 +28,46 @@
 
 <script>
     export default {
-        name: "NoticeInsert",
+        name: "DepartmentInsert",
         data(){
             return{
-                title:"",
-                text:""
+                department:{
+                    name:'',
+                    remark:'',
+                    id:''
+                }
             }
         },
         methods:{
             rebuild(){
-                this.title="";
-                this.text="";
+                this.department.name = "";
+                this.department.remark = "";
             },
-            add(){
-                this.$message({
-                    message: '添加成功',
-                    type: 'success'
-                });
-                this.title="";
-                this.text="";
+            saveDepartment() {
+                const config={
+                    url:"/department/saveDepartment",
+                    method:"post",
+                    data:{
+                        'name':this.department.name,
+                        'remark':this.department.remark,
+                        'id':this.department.id,
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                    console.log(resp.status)
+                    if (resp.status===200){
+                        this.$message({
+                            message: '添加成功',
+                            type: 'success'
+                        });
+
+                    }else{
+                        this.$message({
+                            message: '添加失败',
+                            type: 'error'
+                        });
+                    }
+                })
             }
         }
     }
@@ -62,6 +82,5 @@
         padding-top: 25px;
         width: 1400px;
         margin-top: -25px;
-
     }
 </style>

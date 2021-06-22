@@ -230,10 +230,6 @@
                 this.$axios.post("/user/listUserInfo").then((resp)=> {
                     this.userData = resp.data;
                 }).catch(error =>{
-                    this.$message({
-                        type: 'error',
-                        message: "查询失败，原因是"+error.toString(),
-                    });
                     this.$router.push({name: '404'});
                 });
             },
