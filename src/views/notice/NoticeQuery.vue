@@ -142,7 +142,7 @@
                 view: false,
                 tableData:[],
                 allNotice:[],
-                isManage:true,
+                isManage:false,
             }
         },
         methods: {
