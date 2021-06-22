@@ -60,7 +60,9 @@
                             message: '添加成功',
                             type: 'success'
                         });
-
+                        this.name="";
+                        this.remark="";
+                        this.$router.push("/Home/SectionQuery")
                     }else{
                         this.$message({
                             message: '添加失败',
