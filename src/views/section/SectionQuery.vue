@@ -4,13 +4,13 @@
         <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">部门名称：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="search" placeholder="请输入部门名称"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="deleteAllSelect">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="searchByName">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="danger" :disabled="isDeleted" @click="deleteAllSelect">删除</el-button>
         </div>
         <el-table
                @selection-change="selectChange"
-                :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())
-                                              || data.remark.includes(search))"
+                :data="tableData"
                 border
                 style="width: 100%"
                 margin="auto">
@@ -41,11 +41,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="1">
-        </el-pagination>
+        <div class="block">
+            <el-pagination
+                    @current-change="handleCurrentChange()"
+                    :current-page.sync="currentPage"
+                    :page-size="4"
+                    layout="prev, pager, next, jumper"
+                    :total="allSection.length">
+            </el-pagination>
+        </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
         <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
@@ -82,13 +86,16 @@
         name: "DepartmentQuery",
         data() {
             return {
-                //
+                allSection:[],
+                allPage:1,
+                currentPage: 1,
                 deleteArr:[],
                 department:{
                     name:'',
                     remark:'',
                     id:''
                 },
+                isDeleted: true,
                 search:'',
                 textarea: '',
                 labelPosition: 'right',
@@ -100,27 +107,42 @@
                 overView:false,
                 overView2:false,
                 editView:false,
-                popup: false,
-                tableData: []
+                popup:false,
+                tableData:[],
             }
         },
-        created() {
+        activated() {
             this.listSection();
         },
         methods: {
+            onePage(){
+                this.tableData=[];
+                this.allPage=Math.ceil(this.allSection.length/4);
+                for(let i=0; i<4; i++){
+                    if(this.allSection[(this.currentPage-1)*4+i]==null){
+                        break;
+                    }
+                    this.tableData.push(this.allSection[(this.currentPage-1)*4+i]);
+                }
+            },
             handleSizeChange(val) {
                 console.log(`每页 ${val} 条`);
             },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+            handleCurrentChange() {
+                console.log(this.currentPage);
+                this.onePage()
             },
             selectChange(selection){     // 参数selection返回所选行的各个分量
+                console.log(selection)
                 if(selection.length>0){
-                    this.isDisabled = false;
+                    // this.isDisabled = false;
+
                     this.deleteArry = selection;
-                    console.log(this.deleteArry)
+                    this.isDeleted = false;
                 }else{
-                    this.isDisabled = true;                }
+                    // this.isDisabled = true;
+                    this.isDeleted = true;
+                }
             },
             deleteAllSelect(){
                 this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
@@ -146,7 +168,8 @@
             },
             listSection(){
                 this.$axios.post("/department/listDepartment").then((resp)=>{
-                    this.tableData = resp.data
+                    this.allSection = resp.data
+                    this.onePage();
                 })
             },
             clearInput(){
@@ -155,6 +178,12 @@
             close(){
                 this.overView2 = false;
                 this.editView = false;
+            },
+            searchByName(){
+                this.$axios.post("/department/listDepartmentByName?name=" + this.search).then((resp)=>{
+                    this.allSection = resp.data
+                    this.onePage();
+                })
             },
             success(){
                 this.$message({

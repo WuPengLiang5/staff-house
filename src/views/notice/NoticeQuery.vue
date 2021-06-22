@@ -19,11 +19,9 @@
             <el-table-column
                     type="selection"
                     fixed
-                    width="60"
                     align="center"
-                    v-if="isManage">
+                    v-if="checkboxV">
             </el-table-column>
-
 
             <el-table-column
                 fixed
@@ -32,9 +30,16 @@
                 align="center">
         </el-table-column>
         <el-table-column
-                prop="content"
                 label="公告内容"
                 align="center">
+            <template slot-scope="scope">
+                <div v-if="scope.row.content.length>=8">
+                    {{scope.row.content.slice(0,8)}}.....
+                </div>
+                <div v-else>
+                    {{scope.row.content}}
+                </div>
+            </template>
         </el-table-column>
         <el-table-column
                 prop="createDate"
@@ -143,6 +148,7 @@
                 tableData:[],
                 allNotice:[],
                 isManage:false,
+                checkboxV:true,
             }
         },
         methods: {
@@ -160,6 +166,10 @@
                 }else{
                     this.isDisabled = true;                }
             },
+            /**
+             * 根据页号获取该页数据
+             *
+             */
             onePageNotice(){
                 this.tableData=[];
                 this.pageCount = Math.ceil(this.allNotice.length/6)
@@ -368,12 +378,12 @@
             },
             judgeStatus(){
                 this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
+                this.checkboxV = this.isManage;
+                console.log(this.isManage)
             },
 
         },
-        mounted() {
-            this.judgeStatus()
-        },
+
         // watch:{
         //     $route(){
         //         this.listNotice()
@@ -384,6 +394,9 @@
          * 添加页面添加成功后，跳转刷新
          *
          */
+        mounted() {
+            this.judgeStatus();
+        },
         activated(){
         this.listNotice();//重新加载数据
       },
