@@ -4,13 +4,13 @@
         <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">部门名称：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="search" placeholder="请输入部门名称"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="deleteAllSelect">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="searchByName">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="danger" :disabled="isDeleted" @click="deleteAllSelect">删除</el-button>
         </div>
         <el-table
                @selection-change="selectChange"
-                :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())
-                                              || data.remark.includes(search))"
+                :data="tableData"
                 border
                 style="width: 100%"
                 margin="auto">
@@ -95,6 +95,7 @@
                     remark:'',
                     id:''
                 },
+                isDeleted: true,
                 search:'',
                 textarea: '',
                 labelPosition: 'right',
@@ -132,12 +133,16 @@
                 this.onePage()
             },
             selectChange(selection){     // 参数selection返回所选行的各个分量
+                console.log(selection)
                 if(selection.length>0){
-                    this.isDisabled = false;
+                    // this.isDisabled = false;
+
                     this.deleteArry = selection;
-                    console.log(this.deleteArry)
+                    this.isDeleted = false;
                 }else{
-                    this.isDisabled = true;                }
+                    // this.isDisabled = true;
+                    this.isDeleted = true;
+                }
             },
             deleteAllSelect(){
                 this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
@@ -173,6 +178,12 @@
             close(){
                 this.overView2 = false;
                 this.editView = false;
+            },
+            searchByName(){
+                this.$axios.post("/department/listDepartmentByName?name=" + this.search).then((resp)=>{
+                    this.allSection = resp.data
+                    this.onePage();
+                })
             },
             success(){
                 this.$message({
