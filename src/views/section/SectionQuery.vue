@@ -6,7 +6,7 @@
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="search" placeholder="请输入部门名称"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="searchByName">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" :disabled="isDeleted" @click="deleteAllSelect">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="danger" :disabled="isDeleted" @click="deleteAllSelect">删除</el-button>
         </div>
         <el-table
                @selection-change="selectChange"
