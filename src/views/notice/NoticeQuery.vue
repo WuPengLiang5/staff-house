@@ -344,6 +344,11 @@
                 this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
                 this.checkboxV = this.isManage;
             },
+            init(){
+                this.noticeTitle = "";
+                this.noticeContent = "";
+                this.listNotice();
+            }
         },
         //添加页面添加成功后，跳转刷新
         activated(){
@@ -351,6 +356,11 @@
             this.listNotice();
             this.judgeStatus();
         },
+        watch: {  //监听
+            $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+                this.init()
+            }
+        }
     }
 </script>
 

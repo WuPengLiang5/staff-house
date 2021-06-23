@@ -241,11 +241,13 @@
             init(){
                 this.userName="";
                 this.rangeValue="";
+                this.getUserList();
+
             }
         },
         mounted() {
             this.getUserList();
-            this.judgeStatus()
+            this.judgeStatus();
         },
         watch: {  //监听
             $route(to, from) { //路由变化方式，路由发生变化，方法就会执行

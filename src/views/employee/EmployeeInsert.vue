@@ -139,12 +139,20 @@ export default {
       this.$axios.get('/job/getAllJobsByLike?page=1&limit=100').then(res => {
         this.positionOption=res.data.data.records;
       })
+    },
+    init(){
+      this.employeeData = {};
     }
   },
   mounted () {
     this.getDep();
     this.getPosition();
   },
+  watch: {  //监听
+    $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+      this.init()
+    }
+  }
 }
 </script>
 
