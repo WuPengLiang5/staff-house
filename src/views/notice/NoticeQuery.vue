@@ -173,8 +173,6 @@
             onePageNotice(){
                 this.tableData=[];
                 this.pageCount = Math.ceil(this.allNotice.length/6)
-                // console.log(Math.ceil(this.allNotice.length/6))
-                // console.log(this.currentPage)
                 if(this.currentPage>this.pageCount)
                     this.currentPage--;
                 for(let i=0;i<6;i++){
@@ -241,7 +239,9 @@
                     }
                 }
                 this.$axios(config).then((resp)=>{
+
                         this.allNotice=resp.data;
+                        this.currentPage = 1;
                         this.onePageNotice();
                     })
             },
@@ -250,8 +250,10 @@
              *
              */
             clearInput(){
+                console.log(this.currentPage)
                 this.noticeTitle=''
                 this.noticeContent=''
+                this.currentPage = 1;
                 this.search()
             },
             /**
@@ -379,24 +381,12 @@
             judgeStatus(){
                 this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
                 this.checkboxV = this.isManage;
-                console.log(this.isManage)
             },
 
         },
-
-        // watch:{
-        //     $route(){
-        //         this.listNotice()
-        //         //跳转到该页面后需要进行的操作
-        //     }
-        // },
-        /**
-         * 添加页面添加成功后，跳转刷新
-         *
-         */
         activated(){
-        this.listNotice();//重新加载数据
-            this.judgeStatus();
+        this.listNotice();
+        this.judgeStatus();
       },
 
     }
