@@ -18,13 +18,12 @@
             <el-table-column
                     type="selection"
                     align="center"
-                    v-if="checkboxV" >
+                    v-if="checkboxV">
             </el-table-column>
             <el-table-column
                     prop="name"
                     label="部门名称"
-                    align="center"
-                    >
+                    align="center">
             </el-table-column>
             <el-table-column
                     prop="remark"
@@ -64,8 +63,7 @@
                             type="textarea"
                             :autosize="{ minRows: 10, maxRows: 10}"
                             placeholder="请输入内容"
-                            v-model="department.remark"
-                    >
+                            v-model="department.remark">
                     </el-input>
                 </el-form-item>
                 <el-divider></el-divider>
@@ -88,6 +86,7 @@
             return {
                 allSection:[],
                 allPage:1,
+                checkboxV:true,
                 currentPage: 1,
                 deleteArr:[],
                 department:{
@@ -95,21 +94,20 @@
                     remark:'',
                     id:''
                 },
-                isDeleted: true,
-                isManage: false,
-                checkboxV:true,
-                search:'',
-                textarea: '',
-                labelPosition: 'right',
+                editView:false,
                 formLabelAlign: {
                     name: '',
                     region: '',
                     type: ''
                 },
+                isDeleted: true,
+                isManage: false,
+                labelPosition: 'right',
                 overView:false,
                 overView2:false,
-                editView:false,
                 popup:false,
+                search:'',
+                textarea: '',
                 tableData:[],
             }
         },
@@ -302,17 +300,15 @@
 </script>
 
 <style scoped>
-
-    .login {
+    .editWindow{
         position: fixed;
         font-size: 24px;
-        height: 360px;
+        height: 500px;
         width: 50%;
         background-color: #ffffff;
         border-radius: 10px;
-        margin-left: 40%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        top: 40%;
+        transform: translate(30%, -30%);
         z-index: 1000;
     }
     .over {
@@ -324,16 +320,5 @@
         left: 0;
         z-index: 999;
         background-color: #111111;
-    }
-    .editWindow{
-        position: fixed;
-        font-size: 24px;
-        height: 500px;
-        width: 50%;
-        background-color: #ffffff;
-        border-radius: 10px;
-        top: 40%;
-        transform: translate(30%, -30%);
-        z-index: 1000;
     }
 </style>

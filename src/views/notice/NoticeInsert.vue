@@ -2,24 +2,23 @@
 
     <div>
         <div>
-        <el-form  label-width="220px" style="margin-top: 50px;">
-            <el-form-item label="公告名称" style="margin-right: 120px" >
-                <el-input v-model="title"></el-input>
+        <el-form :model="addForm" :rules="addRules" ref="addForm" label-width="220px" style="margin-top: 50px;">
+            <el-form-item prop="title" label="公告名称" style="margin-right: 120px" >
+                <el-input v-model="addForm.title"></el-input>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item label="公告内容" style="margin-right: 120px" >
+            <el-form-item prop="content" label="公告内容" style="margin-right: 120px" >
                 <el-input
-                        v-model="content"
+                        v-model="addForm.content"
                         type="textarea"
                         :autosize="{ minRows: 10, maxRows: 10}"
                         placeholder="请输入内容"
-                        :show-word-limit="true"
-                >
+                        :show-word-limit="true">
                 </el-input>
             </el-form-item>
             <el-divider></el-divider>
             <el-form-item style="margin-right: 120px">
-                <el-button type="primary" @click="saveNotice">添加</el-button>
+                <el-button type="primary" @click="saveNotice('addForm')">添加</el-button>
                 <el-button type="primary" @click="rebuild">重置</el-button>
             </el-form-item>
         </el-form>
@@ -33,8 +32,22 @@
         data(){
             return{
                 userInfo:JSON.parse(sessionStorage.getItem("userInfo")),
-                title:"",
-                content:""
+                addForm:{
+                    title:"",
+                    content:"",
+                },
+                addRules:{
+                   title:[{
+                        required: true,
+                        message: '标题不能为空',
+                        trigger: 'blur'
+                    }],
+                    content:[{
+                        required: true,
+                        message: '内容不能为空',
+                        trigger: 'blur'
+                    }]
+                }
             }
         },
         methods:{
@@ -42,7 +55,7 @@
                 this.title="";
                 this.content="";
             },
-            saveNotice(){
+            saveNotice(addForm){
                 let nowDate = new Date();
                 let date = {
                     year: nowDate.getFullYear(),
@@ -55,28 +68,39 @@
                     method:"post",
                     data:{
                         'userId':this.userInfo.id,
-                        'content':this.content,
-                        'title':this.title,
+                        'content':this.addForm.content,
+                        'title':this.addForm.title,
                         'createDate':createDate,
                     }
                 }
 
-                this.$axios(config).then((resp)=>{
-                    if (resp.status===200){
-                        this.$message({
-                            message: '添加成功',
-                            type: 'success'
-                        });
-                        this.title="";
-                        this.content="";
-                        this.$router.push("/Home/NoticeQuery")
+                this.$refs[addForm].validate((valid) =>{
+                    if(valid){
+                        this.$axios(config).then((resp)=>{
+
+                            if (resp.status===200){
+                                this.$message({
+                                    message: '添加成功',
+                                    type: 'success'
+                                });
+                                this.title="";
+                                this.content="";
+                                this.$router.push("/Home/NoticeQuery")
+                            }else{
+                                this.$message({
+                                    message: '添加失败',
+                                    type: 'error'
+                                });
+                            }
+                        })
                     }else{
                         this.$message({
-                            message: '添加失败',
+                            message: '公告标题或公告内容有错',
                             type: 'error'
                         });
                     }
                 })
+
             }
         }
     }

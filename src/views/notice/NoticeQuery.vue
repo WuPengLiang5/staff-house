@@ -217,23 +217,26 @@
             },
             //查询
             search(){
-              const config={
-                url:"/notice/searchNotice",
-                method:"post",
-                data:{
-                  "title":this.noticeTitle,
-                  "content":this.noticeContent
+                const config={
+                    url:"/notice/searchNotice",
+                    method:"post",
+                    data:{
+                        "title":this.noticeTitle,
+                        "content":this.noticeContent
+                    }
                 }
-              }
-              this.$axios(config).then((resp)=>{
-                this.allNotice=resp.data;
-                this.onePageNotice();
-              })
+                this.$axios(config).then((resp)=>{
+
+                        this.allNotice=resp.data;
+                        this.currentPage = 1;
+                        this.onePageNotice();
+                    })
             },
             //清除查询框
             clearInput(){
                 this.noticeTitle=''
                 this.noticeContent=''
+                this.currentPage = 1;
                 this.search()
             },
             //获取所有公告
