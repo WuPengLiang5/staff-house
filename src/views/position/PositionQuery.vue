@@ -9,7 +9,7 @@
     <div style="width:500px;margin:25px 0;">
       <el-input v-model="positionName" placeholder="请输入职位" style="width:300px"></el-input>
       <el-button type="primary" style="margin-left: 10px;" @click="searchPosition">搜索</el-button>
-      <el-button type="primary" style="margin-left: 10px;" @click="deletePosition">删除选中</el-button>
+      <el-button type="primary" style="margin-left: 10px;" @click="deletePosition" v-show="userData.status===1">删除选中</el-button>
     </div>
     <el-table
         ref="multipleTable"
@@ -38,7 +38,7 @@
           label="操作"
           show-overflow-tooltip>
         <template slot-scope="scope">
-          <el-button type="primary" @click="editPosition(scope.row)">修改</el-button>
+          <el-button type="primary" @click="editPosition(scope.row)">{{userData.status===1?'修改':'查看'}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -56,10 +56,10 @@
     </div>
 
     <el-dialog
-        :title="dialogTitle"
+        :title="dialogTitle[userData.status]"
         :visible.sync="dialogFormVisible"
         :close-on-click-modal="false">
-      <el-form ref="userData" :model="updatePosition" :disabled="userData.status!=='管理员'" label-width="100px">
+      <el-form ref="userData" :model="updatePosition" :disabled="userData.status!==1" label-width="100px">
         <el-form-item label="职位名称">
           <el-input v-model="updatePosition.name"></el-input>
         </el-form-item>
@@ -69,7 +69,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" v-show="userData.status==='管理员'" @click="editPositionConfirm">确 定</el-button>
+        <el-button type="primary" v-show="userData.status===1" @click="editPositionConfirm">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -96,11 +96,11 @@ export default {
       positions: [],
       updatePosition: {},
       multipleSelection: [],
-      userData: {loginName: "1212556", userName: "李二", status: "管理员"},
+      userData: {},
       isManage: true,
       deleteDialogVisible: false,
       dialogFormVisible: false,
-      dialogTitle: '修改职位',
+      dialogTitle: {1:'修改职位',0:'查看职位'},
       dialogStatus: "",
       currentPage: 1,
       pageSize: 5
@@ -180,6 +180,7 @@ export default {
     }
   },
   mounted() {
+    this.userData = JSON.parse(window.sessionStorage.getItem('userInfo'))
     this.getAllJobsByLike();
   }
 }
