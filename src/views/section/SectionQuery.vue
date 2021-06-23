@@ -243,7 +243,6 @@
                 })
             },
             selectChange(selection){     // 参数selection返回所选行的各个分量
-                console.log(selection)
                 if(selection.length>0){
                     // this.isDisabled = false;
 
