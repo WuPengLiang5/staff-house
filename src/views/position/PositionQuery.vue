@@ -177,11 +177,20 @@ export default {
         this.positions = data.data.records;
         this.totalPositions = data.data.total;
       })
+    },
+    init(){
+      this.positionName = "";
+      this.getAllJobsByLike();
     }
   },
   mounted() {
-    this.userData = JSON.parse(window.sessionStorage.getItem('userInfo'))
+    this.userData = JSON.parse(window.sessionStorage.getItem('userInfo'));
     this.getAllJobsByLike();
+  },
+  watch: {  //监听
+    $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+      this.init()
+    }
   }
 }
 </script>

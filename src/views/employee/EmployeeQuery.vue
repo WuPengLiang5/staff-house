@@ -414,11 +414,11 @@ export default {
     },
     searchEmployee() {
       console.log('/Employee/getEmployeeByLike?page=' + this.currentPage + '&limit=' + this.pageSize + '&deptId='
-          + this.searchData.depId + '&jobId=' + this.searchData.jobId + '&sex=' + this.searchData.sex + '&name='
-          + this.searchData.name + '&phone=' + this.searchData.phone + '&cardId=' + this.searchData.cardId)
+              + this.searchData.depId + '&jobId=' + this.searchData.jobId + '&sex=' + this.searchData.sex + '&name='
+              + this.searchData.name + '&phone=' + this.searchData.phone + '&cardId=' + this.searchData.cardId)
       this.$axios.get('/Employee/getEmployeeByLike?page=' + this.currentPage + '&limit=' + this.pageSize + '&deptId='
-          + this.searchData.depId + '&jobId=' + this.searchData.jobId + '&sex=' + this.searchData.sex + '&name='
-          + this.searchData.name + '&phone=' + this.searchData.phone + '&cardId=' + this.searchData.cardId).then(res => {
+              + this.searchData.depId + '&jobId=' + this.searchData.jobId + '&sex=' + this.searchData.sex + '&name='
+              + this.searchData.name + '&phone=' + this.searchData.phone + '&cardId=' + this.searchData.cardId).then(res => {
         console.log(res)
         res.data.data.records.forEach((v) => {
           // console.log(v)
@@ -441,6 +441,11 @@ export default {
         this.employees = res.data.data.records;
         this.totalEmployees = res.data.data.total;
       })
+    },
+    init(){
+      this.searchData = {depId: '', jobId: '', sex: '', phone: '', name: '', cardId: ''};
+      this.sexOption =  [{value: 1, label: '男'}, {value: 0, label: '女'}];
+      this.getAllEmployeesByLike();
     }
   },
   mounted() {
@@ -448,6 +453,11 @@ export default {
     this.getDep();
     this.getPosition();
     this.getAllEmployeesByLike();
+  },
+  watch: {  //监听
+    $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+      this.init()
+    }
   }
 }
 </script>
