@@ -350,6 +350,7 @@
             //重新加载数据
             this.listNotice();
             this.judgeStatus();
+            this.clearInput()
         },
     }
 </script>

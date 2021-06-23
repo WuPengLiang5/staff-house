@@ -52,8 +52,8 @@
         },
         methods:{
             rebuild(){
-                this.title="";
-                this.content="";
+                this.addForm.title="";
+                this.addForm.content="";
             },
             saveNotice(addForm){
                 let nowDate = new Date();
@@ -83,8 +83,7 @@
                                     message: '添加成功',
                                     type: 'success'
                                 });
-                                this.title="";
-                                this.content="";
+                                this.rebuild()
                                 this.$router.push("/Home/NoticeQuery")
                             }else{
                                 this.$message({
