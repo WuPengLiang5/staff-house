@@ -7,7 +7,7 @@
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="noticeContent" placeholder="请输入公告内容"></el-input>
             <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="search">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
-            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="danger" :disabled="isDisabled" @click="deleteNoticeByQuery" v-if="isManage">删除</el-button>
         </div>
         <el-table
             :data="tableData"
@@ -19,40 +19,42 @@
             <el-table-column
                     type="selection"
                     fixed
-                    width="60"
-                    align="center">
+                    align="center"
+                    v-if="checkboxV">
             </el-table-column>
-
 
             <el-table-column
                 fixed
                 prop="title"
                 label="公告名称"
-                width="150"
                 align="center">
         </el-table-column>
         <el-table-column
-                prop="content"
                 label="公告内容"
-                width="305"
                 align="center">
+            <template slot-scope="scope">
+                <div v-if="scope.row.content.length>=8">
+                    {{scope.row.content.slice(0,8)}}.....
+                </div>
+                <div v-else>
+                    {{scope.row.content}}
+                </div>
+            </template>
         </el-table-column>
         <el-table-column
                 prop="createDate"
                 label="创建时间"
-                width="150"
                 align="center">
         </el-table-column>
         <el-table-column
                 prop="userName"
                 label="公告人"
-                width="150"
                 align="center">
         </el-table-column>
         <el-table-column
                     label="操作"
-                    width="150"
-                    align="center">
+                    align="center"
+                    v-if="isManage">
             <template slot-scope="scope">
                 <el-button  type="text" size="small" v-on:click="deleteNotice(scope.row.id)" >删除</el-button>
                 <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
@@ -60,7 +62,6 @@
         </el-table-column>
         <el-table-column
                 label="预览"
-                width="100"
                 align="center">
             <template slot-scope="scope">
                 <a class="el-icon-view"  @click="viewNotice(scope.row)" style="cursor: pointer"></a>
@@ -145,7 +146,9 @@
                 editView:false,
                 view: false,
                 tableData:[],
-                allNotice:[]
+                allNotice:[],
+                isManage:false,
+                checkboxV:true,
             }
         },
         methods: {
@@ -163,6 +166,10 @@
                 }else{
                     this.isDisabled = true;                }
             },
+            /**
+             * 根据页号获取该页数据
+             *
+             */
             onePageNotice(){
                 this.tableData=[];
                 this.pageCount = Math.ceil(this.allNotice.length/6)
@@ -368,8 +375,15 @@
                         message: '已取消删除'
                     });
                 });
-            }
+            },
+            judgeStatus(){
+                this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
+                this.checkboxV = this.isManage;
+                console.log(this.isManage)
+            },
+
         },
+
         // watch:{
         //     $route(){
         //         this.listNotice()
@@ -382,6 +396,7 @@
          */
         activated(){
         this.listNotice();//重新加载数据
+            this.judgeStatus();
       },
 
     }

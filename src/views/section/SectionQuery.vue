@@ -4,48 +4,52 @@
         <div style="height: 55px">
             <div style="float: left;color: #336dff;margin-top: 15px">部门名称：</div>
             <el-input style="float: left;width: 240px;margin-bottom: 10px;margin-top: 7px" v-model="search" placeholder="请输入部门名称"></el-input>
-            <el-button style="float:left;margin: 7px 0px 5px 10px" type="primary" @click="deleteAllSelect">删除</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="searchByName">搜索</el-button>
             <el-button style="float:left;margin: 7px 0px 5px 5px" type="primary" @click="clearInput">清空</el-button>
+            <el-button style="float:left;margin: 7px 0px 5px 10px" type="danger" v-if="isManage" :disabled="isDeleted" @click="deleteAllSelect">删除</el-button>
         </div>
         <el-table
                @selection-change="selectChange"
-                :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase())
-                                              || data.remark.includes(search))"
+                :data="tableData"
                 border
                 style="width: 100%"
-                margin="auto">
+                margin="auto"
+                ref="multipleTable">
             <el-table-column
                     type="selection"
-                    width="110"
-                    align="center">
+                    align="center"
+                    v-if="checkboxV" >
             </el-table-column>
             <el-table-column
                     prop="name"
                     label="部门名称"
-                    width="550"
-                    align="center">
+                    align="center"
+                    >
             </el-table-column>
             <el-table-column
                     prop="remark"
                     label="详细描述"
-                    width="330"
                     align="center">
             </el-table-column>
             <el-table-column
                     label="操作"
-                    width="224"
-                    align="center">
+                    align="center"
+                    v-if="isManage">
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
                     <el-button type="text" size="small" v-on:click="deleteId(scope.row.id)" >删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="1">
-        </el-pagination>
+        <div class="block">
+            <el-pagination
+                    @current-change="handleCurrentChange()"
+                    :current-page.sync="currentPage"
+                    :page-size="4"
+                    layout="prev, pager, next, jumper"
+                    :total="allSection.length">
+            </el-pagination>
+        </div>
         <div v-show="overView" class="over" @click="closepopup"></div>
         <div v-show="overView2" class="over" @click="closepopup"></div>
         <div class="editWindow" v-show="editView">
@@ -82,13 +86,18 @@
         name: "DepartmentQuery",
         data() {
             return {
-                //
+                allSection:[],
+                allPage:1,
+                currentPage: 1,
                 deleteArr:[],
                 department:{
                     name:'',
                     remark:'',
                     id:''
                 },
+                isDeleted: true,
+                isManage: false,
+                checkboxV:true,
                 search:'',
                 textarea: '',
                 labelPosition: 'right',
@@ -100,27 +109,36 @@
                 overView:false,
                 overView2:false,
                 editView:false,
-                popup: false,
-                tableData: []
+                popup:false,
+                tableData:[],
             }
         },
-        created() {
+        activated() {
             this.listSection();
+            this.judgeStatus();
         },
         methods: {
-            handleSizeChange(val) {
-                console.log(`每页 ${val} 条`);
+            onePage(){
+                this.tableData=[];
+                this.allPage=Math.ceil(this.allSection.length/4);
+                for(let i=0; i<4; i++){
+                    if(this.allSection[(this.currentPage-1)*4+i]==null){
+                        break;
+                    }
+                    this.tableData.push(this.allSection[(this.currentPage-1)*4+i]);
+                }
             },
-            handleCurrentChange(val) {
-                console.log(`当前页: ${val}`);
+            clearInput(){
+                this.search = "";
             },
-            selectChange(selection){     // 参数selection返回所选行的各个分量
-                if(selection.length>0){
-                    this.isDisabled = false;
-                    this.deleteArry = selection;
-                    console.log(this.deleteArry)
-                }else{
-                    this.isDisabled = true;                }
+            close(){
+                this.overView2 = false;
+                this.editView = false;
+            },
+            //关闭活动规则页面
+            closepopup() {
+                this.popup = false;
+                this.overView = false;
             },
             deleteAllSelect(){
                 this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
@@ -143,71 +161,6 @@
                         message: '已取消删除'
                     });
                 });
-            },
-            listSection(){
-                this.$axios.post("/department/listDepartment").then((resp)=>{
-                    this.tableData = resp.data
-                })
-            },
-            clearInput(){
-                this.search = "";
-            },
-            close(){
-                this.overView2 = false;
-                this.editView = false;
-            },
-            success(){
-                this.$message({
-                    message: '添加成功',
-                    type: 'success'
-                });
-                this.overView2 = false;
-                this.editView = false;
-            },
-            updateDepartment(){
-                const config={
-                    url:"/department/updateDepartment",
-                    method:"post",
-                    data:{
-                        'name':this.department.name,
-                        'remark':this.department.remark,
-                        'id':this.department.id,
-                    }
-                }
-                this.$axios(config).then((resp)=>{
-                    console.log(resp.status)
-                    if (resp.status===200){
-                        this.$message({
-                            message: '编辑成功',
-                            type: 'success'
-                        });
-                    }else{
-                        this.$message({
-                            message: '编辑失败',
-                            type: 'error'
-                        });
-                    }
-                })
-            },
-            //打开活动规则页面
-            showpopup(){
-                this.popup = true;
-                this.overView = true;
-            },
-            //关闭活动规则页面
-            closepopup() {
-                this.popup = false;
-                this.overView = false;
-            },
-            handleClick(row) {
-                console.log(row);
-            },
-            edit(department){
-                this.department.id=department.id
-                this.department.name=department.name
-                this.department.remark=department.remark
-                this.editView=true
-                this.overView2=true;
             },
             deleteId(id) {
                 console.log(id)
@@ -261,7 +214,90 @@
                     }
                 })
             },
+            edit(department){
+                this.department.id=department.id
+                this.department.name=department.name
+                this.department.remark=department.remark
+                this.editView=true
+                this.overView2=true;
+            },
+            handleClick(row) {
+                console.log(row);
+            },
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange() {
+                console.log(this.currentPage);
+                this.onePage()
+            },
+            judgeStatus(){
+                this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
+                this.checkboxV = this.isManage;
+                console.log(this.isManage)
+            },
+            listSection(){
+                this.$axios.post("/department/listDepartment").then((resp)=>{
+                    this.allSection = resp.data
+                    this.onePage();
+                })
+            },
+            selectChange(selection){     // 参数selection返回所选行的各个分量
+                console.log(selection)
+                if(selection.length>0){
+                    // this.isDisabled = false;
 
+                    this.deleteArry = selection;
+                    this.isDeleted = false;
+                }else{
+                    // this.isDisabled = true;
+                    this.isDeleted = true;
+                }
+            },
+            searchByName(){
+                this.$axios.post("/department/listDepartmentByName?name=" + this.search).then((resp)=>{
+                    this.allSection = resp.data
+                    this.onePage();
+                })
+            },
+            //打开活动规则页面
+            showpopup(){
+                this.popup = true;
+                this.overView = true;
+            },
+            success(){
+                this.$message({
+                    message: '添加成功',
+                    type: 'success'
+                });
+                this.overView2 = false;
+                this.editView = false;
+            },
+            updateDepartment(){
+                const config={
+                    url:"/department/updateDepartment",
+                    method:"post",
+                    data:{
+                        'name':this.department.name,
+                        'remark':this.department.remark,
+                        'id':this.department.id,
+                    }
+                }
+                this.$axios(config).then((resp)=>{
+                    console.log(resp.status)
+                    if (resp.status===200){
+                        this.$message({
+                            message: '编辑成功',
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message({
+                            message: '编辑失败',
+                            type: 'error'
+                        });
+                    }
+                })
+            },
         },
     }
 </script>

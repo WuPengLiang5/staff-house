@@ -42,8 +42,9 @@
                     align="center">
                 <template slot-scope="scope">
                     <el-button @click="checkInfo(scope.row)" type="text" size="small" weight="3">查看</el-button>
-                    <el-button @click="updateUserInfo(scope.row)" type="text" size="small" weight="3"  v-show="isManage">编辑</el-button>
-                    <el-button @click="deleteUser(scope.row)" type="text" size="small" weight="3"  v-show="isManage">删除</el-button>
+                    <el-button @click="updateUserInfo(scope.row)" type="text" size="small" weight="3" v-if="isManage">编辑</el-button>
+                    <el-button @click="deleteUser(scope.row)" type="text" size="small" weight="3" v-if="isManage"
+                               :disabled="scope.row.id === userInfo.id">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -96,7 +97,7 @@
                 userInfo:"",
 
                 //权限
-                isManage:"",
+                isManage:false,
                 dialogFormVisible:false,
                 user:{},
                 dialogTitle: {
@@ -234,8 +235,8 @@
                 });
             },
             judgeStatus(){
+                this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
                 this.userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
-                this.isManage = this.userInfo.status ===1;
             },
             init(){
                 this.userName="";

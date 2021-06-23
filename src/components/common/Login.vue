@@ -66,22 +66,28 @@
                       "password":this.dataForm.password
                     },
                   }).then((resp) => {
-                    console.log(resp.data)
-                    if (resp.data.loginName!=="notfound"){
+                    if (resp.data.loginName!=="notfound" && resp.data.loginName!=="notPassword"){
                       const userInfo = resp.data
                       sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
                       this.$store.commit("changeLogin",userInfo)
                       this.$router.push({name: 'Home'});
                     }else{
+                      let message;
+                      if (resp.data.loginName==="notfound"){
+                          message="用户不存在"
+                      }
+                      if (resp.data.loginName==="notPassword"){
+                          message="密码错误"
+                      }
                       this.$message({
                         type: 'error',
-                        message: "登录失败：密码错误"
+                        message: "登录失败："+message,
                       });
                     }
                   }).catch(error => {
                     this.$message({
                       type: 'error',
-                      message: "登录失败，原因是" + error.toString()
+                      message: "登录失败"
                     });
                   });
                 }else{
