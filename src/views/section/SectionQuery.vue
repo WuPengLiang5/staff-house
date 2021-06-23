@@ -297,6 +297,7 @@
             },
             init(){
                 this.search = "";
+                this.listSection();
             }
         },
         watch: {  //监听
