@@ -218,7 +218,7 @@
           <el-input v-model="updateEmployee.remark"></el-input>
         </el-form-item>
         <el-form-item label="所属部门">
-          <el-select v-model="updateEmployee.depId" placeholder="--请选择所属部门--" @click="clearAll">
+          <el-select v-model="updateEmployee.depId" placeholder="--请选择所属部门--">
             <el-option
                 v-for="item in depOption"
                 :key="item.value"
@@ -358,7 +358,6 @@ export default {
       }
 
       const data = getData()
-      console.log(this.positionOption)
       data.then(onFulfilled => {
         onFulfilled.data.data.records.forEach((v) => {
           // console.log(v)
@@ -383,25 +382,6 @@ export default {
       }).catch(onRejected => {
         console.log(onRejected)
       })
-      // this.$axios.get('/Employee/getEmployeeByLike?page=' + this.currentPage + '&limit=' + this.pageSize).then(response => {
-      //   const data = response.data;
-      //   data.data.records.forEach((v) => {
-      //     // console.log(v)
-      //     if (v.sex === 1) {
-      //       v.sexValue = '男'
-      //     } else {
-      //       v.sexValue = '女'
-      //     }
-      //     this.depOption.forEach((depV) => {
-      //       if (depV.id === v.depId) {
-      //         console.log(1)
-      //         v.depName = depV.name;
-      //       }
-      //     })
-      //   })
-      //   this.employees = data.data.records;
-      //   this.totalEmployees = data.data.total;
-      // })
     },
     getDep() {
       async function getData() {
@@ -416,12 +396,6 @@ export default {
       }).catch(onRejected => {
         console.log(onRejected)
       })
-      // this.$axios.get('/department/listDepartment').then(res => {
-      //   res.data.forEach((v, i) => {
-      //     this.depOption[i] = {value: v.id, label: v.name}
-      //     // console.log(this.depOption)
-      //   })
-      // })
     },
     getPosition() {
       async function getData() {
@@ -430,18 +404,13 @@ export default {
 
       const data = getData()
       data.then(onFulfilled => {
+        console.log(onFulfilled.data.data.records)
         onFulfilled.data.data.records.forEach((v, i) => {
           this.positionOption[i] = {value: v.id, label: v.name}
         })
       }).catch(onRejected => {
         console.log(onRejected)
       })
-      // this.$axios.get('/job/getAllJobsByLike?page=1&limit=100').then(res => {
-      //   res.data.data.records.forEach((v, i) => {
-      //     this.positionOption[i] = {value: v.id, label: v.name}
-      //   })
-      //   // console.log(this.positionOption)
-      // })
     },
     searchEmployee() {
       console.log('/Employee/getEmployeeByLike?page=' + this.currentPage + '&limit=' + this.pageSize + '&deptId='
@@ -472,7 +441,6 @@ export default {
         this.employees = res.data.data.records;
         this.totalEmployees = res.data.data.total;
       })
-      console.log(this.searchData)
     }
   },
   mounted() {

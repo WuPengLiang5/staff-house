@@ -155,10 +155,7 @@
             handleCurrentChange(){
                 this.onePageNotice();
             },
-            /**
-             * checkbox绑定值获取
-             *
-             */
+            //checkbox绑定值获取
             selectionChange(selection){     // 参数selection返回所选行的各个分量
                 if(selection.length>0){
                     this.isDisabled = false;
@@ -166,15 +163,10 @@
                 }else{
                     this.isDisabled = true;                }
             },
-            /**
-             * 根据页号获取该页数据
-             *
-             */
+            //根据页号获取该页数据
             onePageNotice(){
                 this.tableData=[];
                 this.pageCount = Math.ceil(this.allNotice.length/6)
-                // console.log(Math.ceil(this.allNotice.length/6))
-                // console.log(this.currentPage)
                 if(this.currentPage>this.pageCount)
                     this.currentPage--;
                 for(let i=0;i<6;i++){
@@ -187,10 +179,7 @@
 
                 this.pageCount = Math.ceil(this.allNotice.size/6)
             },
-            /**
-             * 批量删除
-             *
-             */
+            //批量删除
             deleteNoticeByQuery(){
                 const idArr = [];
                 for(let i = 0;i < this.deleteArry.length;i++){
@@ -204,7 +193,6 @@
                         "ids":idArr
                     }
                 }
-
 
                 this.$confirm('此操作将永久删除这些公告, 是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -227,55 +215,40 @@
                     })
                 });
             },
-            /**
-             * 查询
-             *
-             */
+            //查询
             search(){
-                const config={
-                    url:"/notice/searchNotice",
-                    method:"post",
-                    data:{
-                        "title":this.noticeTitle,
-                        "content":this.noticeContent
-                    }
+              const config={
+                url:"/notice/searchNotice",
+                method:"post",
+                data:{
+                  "title":this.noticeTitle,
+                  "content":this.noticeContent
                 }
-                this.$axios(config).then((resp)=>{
-                        this.allNotice=resp.data;
-                        this.onePageNotice();
-                    })
+              }
+              this.$axios(config).then((resp)=>{
+                this.allNotice=resp.data;
+                this.onePageNotice();
+              })
             },
-            /**
-             * 清除查询框
-             *
-             */
+            //清除查询框
             clearInput(){
                 this.noticeTitle=''
                 this.noticeContent=''
                 this.search()
             },
-            /**
-             * 获取所有公告
-             *
-             */
+            //获取所有公告
             listNotice(){
                 this.$axios.post("/notice/listNotice").then((resp)=>{
                     this.allNotice = resp.data
                     this.onePageNotice();
                 })
             },
-            /**
-             * 关闭公告编辑窗口
-             *
-             */
+            //关闭公告编辑窗口
             close(){
                 this.overView2 = false;
                 this.editView = false;
             },
-            /**
-             * 更新公告
-             *
-             */
+            //更新公告
             updateNotice(){
                 const config={
                     url:"/notice/updateNotice",
@@ -304,10 +277,7 @@
                 this.overView2 = false;
                 this.editView = false;
             },
-            /**
-             * 预览公告
-             * @param row
-             */
+            //预览公告
             viewNotice(row){
                 this.notice.title = row.title;
                 this.notice.content = row.content;
@@ -324,10 +294,7 @@
             handleClick(row) {
                 console.log(row);
             },
-            /**
-             * 打开编辑窗口
-             *
-             */
+            //打开编辑窗口
             edit(editNotice){
                 this.notice.id = editNotice.id;
                 this.notice.title = editNotice.title;
@@ -335,12 +302,8 @@
                 this.editView=true;
                 this.overView2=true;
             },
-            /**
-             * 删除公告
-             *
-             */
+            //删除公告
             deleteNotice(id){
-
                 const config={
                     url:"/notice/deleteNotice",
                     method:"post",
@@ -348,14 +311,12 @@
                         'id':id,
                     }
                 }
-
                 this.$confirm('此操作将永久删除该公告, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     this.$axios(config).then((resp)=>{
-
                         if (resp.status===200){
                             this.$message({
                                 message: '删除成功',
@@ -379,26 +340,14 @@
             judgeStatus(){
                 this.isManage = JSON.parse(sessionStorage.getItem('userInfo')).status ===1;
                 this.checkboxV = this.isManage;
-                console.log(this.isManage)
             },
-
         },
-
-        // watch:{
-        //     $route(){
-        //         this.listNotice()
-        //         //跳转到该页面后需要进行的操作
-        //     }
-        // },
-        /**
-         * 添加页面添加成功后，跳转刷新
-         *
-         */
+        //添加页面添加成功后，跳转刷新
         activated(){
-        this.listNotice();//重新加载数据
+            //重新加载数据
+            this.listNotice();
             this.judgeStatus();
-      },
-
+        },
     }
 </script>
 

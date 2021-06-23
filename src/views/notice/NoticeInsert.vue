@@ -49,9 +49,7 @@
                     month: nowDate.getMonth() + 1,
                     date: nowDate.getDate(),
                 }
-                console.log(date);
                 let createDate = date.year + '-' + date.month + '-' + date.date;
-
                 const config={
                     url:"/notice/saveNotice",
                     method:"post",
@@ -64,7 +62,6 @@
                 }
 
                 this.$axios(config).then((resp)=>{
-
                     if (resp.status===200){
                         this.$message({
                             message: '添加成功',
@@ -80,8 +77,6 @@
                         });
                     }
                 })
-                console.log(this.userInfo)
-
             }
         }
     }

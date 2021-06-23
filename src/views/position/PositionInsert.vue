@@ -7,11 +7,11 @@
       </el-breadcrumb>
     </div>
     <div style="width:400px;margin: 0 auto;padding-top: 50px">
-      <el-form ref="positionData" :model="positionData">
-        <el-form-item label="职位名称">
+      <el-form label-width="100px" ref="positionData" :model="positionData" :rules="dataRules">
+        <el-form-item label="职位名称" prop="name">
           <el-input v-model="positionData.name" style="width: 300px" placeholder="请输入职位"></el-input>
         </el-form-item>
-        <el-form-item label="详细描述">
+        <el-form-item label="详细描述" prop="remark">
           <el-input
               style="width: 300px"
               type="textarea"
@@ -21,11 +21,10 @@
               v-model="positionData.remark">
           </el-input>
         </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="clearAll">清空</el-button>
-        <el-button type="primary" @click="addPosition">添 加</el-button>
+        <el-button type="primary" @click="addPosition('positionData')">添 加</el-button>
       </div>
     </div>
 
@@ -38,14 +37,22 @@ export default {
   data() {
     return {
       positionData: {name: '', remark: ''},
+      dataRules:{
+        name: [{required: true, message: '部门名称不能为空', trigger: 'blur'}],
+        remark: [{required: true, message: '详情信息不能为空', trigger: 'blur'}]
+      }
     }
   },
   methods: {
-    addPosition() {
-      this.$axios.post('/job/addJob', this.positionData).then(res => {
-        this.$message.success(res.data.msg);
+    addPosition(positionData) {
+      this.$refs[positionData].validate((valid) => {
+        if (valid) {
+          this.$axios.post('/job/addJob', this.positionData).then(res => {
+            this.$message.success(res.data.msg);
+          })
+          this.clearAll();
+        }
       })
-      this.clearAll();
     },
     clearAll() {
       this.positionData = {name: '', remark: ''};
