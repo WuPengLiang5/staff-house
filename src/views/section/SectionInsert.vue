@@ -32,19 +32,19 @@
         data(){
             return{
                 department:{
+                    id:'',
                     name:'',
                     remark:'',
-                    id:''
                 },
                 dataRule: {
                     name: [{
-                        required: true,
                         message: '部门名称不能为空',
+                        required: true,
                         trigger: 'blur'
                       }],
                     remark: [{
-                        required: true,
                         message: '详细信息不能为空',
+                        required: true,
                         trigger: 'blur'
                       }]
                 }
