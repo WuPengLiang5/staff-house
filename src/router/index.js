@@ -123,4 +123,20 @@ const router = new VueRouter({
   routes
 });
 
+
+// 拦截器
+// 路由拦截
+router.beforeEach((to, from, next)=>{
+  if(to.path === '/Login'||to.path ==='/FaceLogin'){
+    next();
+  }else{
+    if(sessionStorage.getItem('Authorization')){
+      next();
+    }else{
+      next('/Login');
+    }
+  }
+});
+
+
 export default router

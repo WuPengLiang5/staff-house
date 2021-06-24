@@ -7,13 +7,13 @@
       </el-breadcrumb>
     </div>
     <div style="width:500px;margin:25px 0;">
-      <el-input v-model="studentName" placeholder="请输入职位" style="width:300px" clearable></el-input>
+      <el-input v-model="positionName" placeholder="请输入职位" style="width:300px"></el-input>
       <el-button type="primary" style="margin-left: 10px;" @click="searchPosition">搜索</el-button>
-      <el-button type="primary" style="margin-left: 10px;" @click="deletePosition">删除选中</el-button>
+      <el-button type="primary" style="margin-left: 10px;" @click="deletePosition" v-show="userData.status===1">删除选中</el-button>
     </div>
     <el-table
         ref="multipleTable"
-        :data="tableData"
+        :data="positions"
         tooltip-effect="dark"
         :border="true"
         style="width: 100%"
@@ -25,19 +25,21 @@
           width="100">
       </el-table-column>
       <el-table-column
-          prop="date"
+          prop="name"
           label="职位名称"
           width="500">
       </el-table-column>
       <el-table-column
-          prop="name"
+          prop="remark"
           label="详细信息"
           width="500">
       </el-table-column>
       <el-table-column
           label="操作"
           show-overflow-tooltip>
-        <span class="modify" style="cursor: pointer;color: red" @click="modifyPosition">修改</span>
+        <template slot-scope="scope">
+          <el-button type="primary" @click="editPosition(scope.row)">{{userData.status===1?'修改':'查看'}}</el-button>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -46,26 +48,40 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
+          :page-sizes="[5, 10, 15, 20]"
+          :page-size=pageSize
           layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :total=totalPositions>
       </el-pagination>
     </div>
 
-    <el-dialog :title="dialogTitle[dialogStatu]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="userData" :model="userData" :disabled="isDisabled" label-width="100px">
+    <el-dialog
+        :title="dialogTitle[userData.status]"
+        :visible.sync="dialogFormVisible"
+        :close-on-click-modal="false">
+      <el-form ref="userData" :model="updatePosition" :disabled="userData.status!==1" label-width="100px">
         <el-form-item label="职位名称">
-          <el-input v-model="userData.loginName"></el-input>
+          <el-input v-model="updatePosition.name"></el-input>
         </el-form-item>
         <el-form-item label="详细信息">
-          <el-input v-model="userData.userName"></el-input>
+          <el-input v-model="updatePosition.remark"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" v-show="isUpdate">确 定</el-button>
+        <el-button type="primary" v-show="userData.status===1" @click="editPositionConfirm">确 定</el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog
+        title="提示"
+        :visible.sync="deleteDialogVisible"
+        width="30%">
+      <span>此操作将永久删除该职位, 是否继续?</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="deleteDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="deletePositionConfirm">确 定</el-button>
+  </span>
     </el-dialog>
   </div>
 </template>
@@ -75,67 +91,22 @@ export default {
   name: "positionQuery",
   data() {
     return {
-      tableData: [{
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-08',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-06',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-07',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      totalPositions: 0,
+      positionName: '',
+      positions: [],
+      updatePosition: {},
       multipleSelection: [],
-      userData: [{loginName: "1212556", userName: "李二", status: "管理员"}],
-      studentName: "",
+      userData: {},
       isManage: true,
+      deleteDialogVisible: false,
       dialogFormVisible: false,
-      user: {},
-      dialogTitle: {
-        checkInfo: "查看信息",
-        updateInfo: "编辑信息"
-      },
-      isUpdate: false,
-      //是否禁用表单
-      isDisabled: true,
-      dialogStatu: "",
-      options: [{
-        value: 'all',
-        label: '全部'
-      }, {
-        value: '1',
-        label: '普通用户'
-      }, {
-        value: '2',
-        label: '管理员'
-      }],
-      rangeValue: "",
-      currentPage:0,
+      dialogTitle: {1:'修改职位',0:'查看职位'},
+      dialogStatus: "",
+      currentPage: 1,
+      pageSize: 5
     }
   },
   methods: {
-    modifyPosition(){
-      this.dialogFormVisible=true;
-    },
     rowClass() { //表格数据居中显示
       return "text-align:center"
     },
@@ -151,38 +122,75 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    selectUser() {
-      this.userData = [{loginName: "888888888", userName: "李二", status: "普通用户"}];
-    },
-    checkInfo(row) {
+    editPosition(row) {
+      this.updatePosition = {id: row.id, name: row.name, remark: row.remark}
       this.dialogFormVisible = true;
-      this.dialogStatu = "checkInfo";
-      this.user.id = row;
     },
-    deletePosition(row) {
-      this.$confirm('此操作将永久删除该职位, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      });
-      this.user.id = row;
+    editPositionConfirm() {
+      this.$axios.put('/job/editJob', this.updatePosition).then(res=>{
+        this.$message.success(res.data.msg);
+      })
+      this.dialogFormVisible=false;
+      this.getAllJobsByLike();
     },
-    updateUserInfo(row) {
-      this.dialogFormVisible = true;
-      this.dialogStatu = "updateInfo";
-      this.user.id = row;
-      this.isUpdate = true;
-      this.isDisabled = false;
+    deletePosition() {
+      if (this.multipleSelection.length === 0) {
+        this.$message.error('请选择你要删除的职位！');
+      } else {
+        this.deleteDialogVisible = true;
+      }
     },
-    searchPosition(){
-
+    deletePositionConfirm() {
+      let ids = ''
+      this.multipleSelection.forEach((v) => {
+        ids += v.id + ','
+      })
+      ids = ids.substr(0, ids.length - 1)
+      this.$axios.delete('/job/deleteJobs?ids=' + ids).then(res => {
+        this.$message.success(res.data.msg);
+        this.currentPage = 1;
+        this.getAllJobsByLike();
+        this.deleteDialogVisible = false;
+      })
     },
-    handleSizeChange(){
-
+    searchPosition() {
+      this.$axios.get('/job/getAllJobsByLike?page=1&limit=' + this.pageSize + '&jobName=' + this.positionName).then(response => {
+        const data = response.data;
+        this.positions = data.data.records;
+        this.totalPositions = data.data.total;
+      })
     },
-    handleCurrentChange(){
-
+    handleSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.handleCurrentChange(1);
     },
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage;
+      this.getAllJobsByLike()
+    },
+    getAllJobsByLike() {
+      this.$axios.get('/job/getAllJobsByLike?page=' + this.currentPage + '&limit=' + this.pageSize).then(response => {
+        const data = response.data;
+        // console.log(data.code);
+        // console.log(data.msg);
+        // console.log(data.data);
+        this.positions = data.data.records;
+        this.totalPositions = data.data.total;
+      })
+    },
+    init(){
+      this.positionName = "";
+      this.getAllJobsByLike();
+    }
+  },
+  mounted() {
+    this.userData = JSON.parse(window.sessionStorage.getItem('userInfo'));
+    this.getAllJobsByLike();
+  },
+  watch: {  //监听
+    $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+      this.init()
+    }
   }
 }
 </script>

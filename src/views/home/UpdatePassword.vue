@@ -102,13 +102,6 @@
                   }
                 }
               });
-
-
-                // this.$nextTick(() => {
-                //     this.$router.push({
-                //         name: "Login"
-                //     })
-                // })
             }
         }
     }

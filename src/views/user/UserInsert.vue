@@ -6,7 +6,7 @@
                 <el-input v-model="user.loginName"></el-input>
             </el-form-item>
             <el-form-item label="初始密码" prop="password">
-                <el-input v-model="user.password"></el-input>
+                <el-input type="password" v-model="user.password"></el-input>
             </el-form-item>
             <el-form-item label="用户名" prop="userName">
                 <el-input v-model="user.userName"></el-input>
@@ -48,15 +48,15 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.$axios.post("/user/saveUserInfo",this.user).then( (resp)=>{
-                            if (resp) {
-                                this.$message.success("添加成功！");
+                            if (resp.data === 1) {
+                                this.$message.success("添加用户成功！");
                                 this.clearAll('user');
                             }
+                            else {
+                                this.$message.error("该用户已存在！");
+                            }
                         }).catch((error)=>{
-                            this.$message({
-                                message: '添加数据失败，原因是'+error.toString(),
-                                type: 'error'
-                            })
+                            this.$message.error("服务器异常！添加数据失败");
                         })
                     } else {
                         this.$message({
@@ -66,9 +66,16 @@
                         return false;
                     }
                 })
-                // this.$router.push({name:'404'});
+            },
+            init(){
+                this.user={};
             }
-        }
+        },
+        watch: {  //监听
+            $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
+                this.init()
+            }
+        },
     }
 </script>
 
