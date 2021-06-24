@@ -149,6 +149,7 @@
                 allNotice:[],
                 isManage:false,
                 checkboxV:true,
+                userInfo:JSON.parse(sessionStorage.getItem('userInfo'))
             }
         },
         methods: {
@@ -176,7 +177,6 @@
                     }
                     this.tableData.push(this.allNotice[(this.currentPage-1)*6+i])
                 }
-
                 this.pageCount = Math.ceil(this.allNotice.size/6)
             },
             //批量删除
@@ -348,7 +348,47 @@
                 this.noticeTitle = "";
                 this.noticeContent = "";
                 this.listNotice();
-            }
+            },
+
+            initWebSocket(){
+              if (typeof WebSocket === "undefined") {
+                alert("您的浏览器不支持WebSocket");
+                return false;
+              }
+
+              let userId=this.userInfo.id
+              let url='ws://localhost:8088/websocket/'+userId
+              //初始化
+              this.websocket = new WebSocket(url);
+              var that = this.websocket;
+              that.onopen = this.websocketonopen;
+              that.onerror = this.websocketonerror;
+              that.onmessage = this.websocketonmessage;
+              that.onclose = this.websocketclose;
+            },
+            websocketonopen() {
+              //发送
+              this.websocket.send('连接成功');
+              console.log("WebSocket连接成功");
+            },
+            websocketonerror(e) {
+              //错误
+              console.log("WebSocket连接发生错误");
+            },
+            websocketonmessage(e){
+              //数据接收
+              //处理逻辑
+              let dataJson = JSON.parse(e.data);
+              this.allNotice=dataJson
+              this.onePageNotice()
+              console.log(dataJson);
+            },
+            websocketclose(e){
+              this.websocket.close()
+              //关闭
+              console.log(e)
+              console.log("WebSocket连接断开");
+            },
         },
         //添加页面添加成功后，跳转刷新
         activated(){
@@ -360,7 +400,14 @@
         watch: {  //监听
             $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
                 this.init()
+                this.websocketclose();
             }
+        },
+        created() {
+          this.initWebSocket()
+        },
+        destroyed(){
+          this.websocketclose();
         }
     }
 </script>

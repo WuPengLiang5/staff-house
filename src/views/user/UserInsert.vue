@@ -6,7 +6,7 @@
                 <el-input v-model="user.loginName"></el-input>
             </el-form-item>
             <el-form-item label="初始密码" prop="password">
-                <el-input v-model="user.password"></el-input>
+                <el-input type="password" v-model="user.password"></el-input>
             </el-form-item>
             <el-form-item label="用户名" prop="userName">
                 <el-input v-model="user.userName"></el-input>
