@@ -26,7 +26,7 @@
       name:'UpdatePassword',
         data() {
             return {
-                loginName: '123',
+                loginName: JSON.parse(sessionStorage.getItem('userInfo')).loginName,
                 visible: false,
                 dataForm: {
                     password: '',
