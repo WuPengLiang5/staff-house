@@ -143,7 +143,35 @@ export default {
     // 文件下载
     download(row) {
       const id = row.id;
-      window.location.href = "http://localhost:8088/document/downloadFile?id="+id;
+      this.$axios({
+        method: 'post',
+        url: '/document/downloadFile?id='+id,
+        data: {},
+        responseType: 'blob'
+      }).then(res => {
+        const { data } = res
+        const blob = new Blob([data])
+        let disposition = decodeURI(res.headers['content-disposition'])
+        // 从响应头中获取文件名称
+        let fileName = disposition
+        if ('download' in document.createElement('a')) {
+          // 非IE下载
+          const elink = document.createElement('a')
+          elink.download = fileName
+          elink.style.display = 'none'
+          elink.href = URL.createObjectURL(blob)
+          document.body.appendChild(elink)
+          elink.click()
+          URL.revokeObjectURL(elink.href) // 释放URL 对象
+          document.body.removeChild(elink)
+        } else {
+          // IE10+下载
+          navigator.msSaveBlob(blob, fileName)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+
     },
   }
 }

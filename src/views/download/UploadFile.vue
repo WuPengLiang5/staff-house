@@ -28,6 +28,7 @@
             :on-error="handleAvatarError"
             :auto-upload="false"
             :limit=limitNum
+            :headers="token"
             :file-list="fileList"
             accept=".docx,.doc,.pdf">
           <template #trigger>
@@ -63,6 +64,7 @@ export default {
         },
         limitNum:1,//同时允许上传的最大数
         fileList:[],//文件列表
+        token: {'token':sessionStorage.getItem("Authorization")}
     }
   },
   methods:{
