@@ -206,6 +206,7 @@
                                 type: 'success'
                             });
                             this.listNotice()
+                            this.websocketsend("更新数据")
                         } else {
                             this.$message({
                                 message: '删除失败',
@@ -270,6 +271,7 @@
                             type: 'success'
                         });
                         this.listNotice()
+                        this.websocketsend("更新数据")
                     }else{
                         this.$message({
                             message: '编辑失败',
@@ -326,6 +328,7 @@
                                 type: 'success'
                             });
                             this.listNotice()
+                            this.websocketsend("更新数据")
                         }else{
                             this.$message({
                                 message: '删除失败',
@@ -383,6 +386,10 @@
               this.onePageNotice()
               console.log(dataJson);
             },
+            websocketsend (Data) {
+              // 数据发送
+              this.websocket.send(Data)
+            },
             websocketclose(e){
               this.websocket.close()
               //关闭
@@ -391,11 +398,13 @@
             },
         },
         //添加页面添加成功后，跳转刷新
+        //在vue对象存活的情况下，进入当前存在activated()函数的页面时，一进入页面就触发；可用于初始化页面数据等
         activated(){
             //重新加载数据
             this.listNotice();
             this.judgeStatus();
             this.clearInput()
+            this.initWebSocket()
         },
         watch: {  //监听
             $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
@@ -403,8 +412,12 @@
                 this.websocketclose();
             }
         },
+        // 在创建vue对象时，当html渲染之前就触发；
+        // 但是注意，全局vue.js不强制刷新或者重启时只创建一次，也就是说，created()只会触发一次；
         created() {
-          this.initWebSocket()
+        },
+        mounted() {
+
         },
         destroyed(){
           this.websocketclose();

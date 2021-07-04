@@ -77,13 +77,13 @@
                 this.$refs[addForm].validate((valid) =>{
                     if(valid){
                         this.$axios(config).then((resp)=>{
-
                             if (resp.status===200){
                                 this.$message({
                                     message: '添加成功',
                                     type: 'success'
                                 });
                                 this.rebuild()
+                                this.websocketsend("更新数据")
                                 this.$router.push("/Home/NoticeQuery")
                             }else{
                                 this.$message({
@@ -106,12 +106,68 @@
                     title:"",
                     content:"",
                 };
-            }
+            },
+            initWebSocket(){
+              if (typeof WebSocket === "undefined") {
+                alert("您的浏览器不支持WebSocket");
+                return false;
+              }
+
+              let userId=this.userInfo.id
+              let url='ws://localhost:8088/websocket/'+userId
+              //初始化
+              this.websocket = new WebSocket(url);
+              var that = this.websocket;
+              that.onopen = this.websocketonopen;
+              that.onerror = this.websocketonerror;
+              that.onmessage = this.websocketonmessage;
+              that.onclose = this.websocketclose;
+            },
+            websocketonopen() {
+              //发送
+              this.websocket.send('连接成功');
+              console.log("WebSocket连接成功");
+            },
+            websocketonerror(e) {
+              //错误
+              console.log("WebSocket连接发生错误");
+            },
+            websocketonmessage(e){
+              //数据接收
+              //处理逻辑
+              let dataJson = JSON.parse(e.data);
+              this.allNotice=dataJson
+              this.onePageNotice()
+              console.log(dataJson);
+            },
+            websocketsend (Data) {
+              // 数据发送
+              this.websocket.send(Data)
+            },
+            websocketclose(e){
+              this.websocket.close()
+              //关闭
+              console.log(e)
+              console.log("WebSocket连接断开");
+            },
         },
         watch: {  //监听
             $route(to, from) { //路由变化方式，路由发生变化，方法就会执行
                 this.init()
+                this.websocketclose();
             }
+        },
+        created() {
+
+        },
+        mounted() {
+
+        },
+        activated() {
+          this.initWebSocket()
+        },
+        destroyed(){
+          this.websocketclose();
         }
     }
 </script>
